@@ -1,15 +1,16 @@
 package com.bubnov.entity;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Card {
 
     private int id;
     private String number;
-    private Double amount;
+    private BigDecimal amount;
     private int bill_id;
 
-    public Card(int id, String number, Double amount, int bill_id) {
+    public Card(int id, String number, BigDecimal amount, int bill_id) {
         this.id = id;
         this.number = number;
         this.amount = amount;
@@ -43,11 +44,11 @@ public class Card {
         this.number = number;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
