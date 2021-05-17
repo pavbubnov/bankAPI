@@ -1,18 +1,14 @@
 package com.bubnov.entity;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Bill {
 
     private int id;
     private int account_id;
-    private Long billNumber;
-
-    public Bill(int id, int account_id, Long billNumber) {
-        this.id = id;
-        this.account_id = account_id;
-        this.billNumber = billNumber;
-    }
+    private BigDecimal amount;
+    private String billNumber;
 
     public Bill() {
     }
@@ -33,11 +29,19 @@ public class Bill {
         this.account_id = account_id;
     }
 
-    public Long getBillNumber() {
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getBillNumber() {
         return billNumber;
     }
 
-    public void setBillNumber(Long billNumber) {
+    public void setBillNumber(String billNumber) {
         this.billNumber = billNumber;
     }
 
@@ -46,12 +50,12 @@ public class Bill {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Bill bill = (Bill) o;
-        return id == bill.id && account_id == bill.account_id && billNumber.equals(bill.billNumber);
+        return id == bill.id && account_id == bill.account_id && amount.equals(bill.amount) && billNumber.equals(bill.billNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, account_id, billNumber);
+        return Objects.hash(id, account_id, amount, billNumber);
     }
 
     @Override
@@ -59,6 +63,7 @@ public class Bill {
         return "Bill{" +
                 "id=" + id +
                 ", account_id=" + account_id +
+                ", amount=" + amount +
                 ", billNumber='" + billNumber + '\'' +
                 '}';
     }

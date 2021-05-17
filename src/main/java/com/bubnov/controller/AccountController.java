@@ -1,10 +1,17 @@
 package com.bubnov.controller;
 
+import com.bubnov.controller.dto.BillRequestDTO;
+import com.bubnov.controller.dto.CardRequestDTO;
+import com.bubnov.entity.Card;
+import com.bubnov.exception.RequestException;
 import com.bubnov.service.AccountService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
@@ -18,32 +25,28 @@ public class AccountController {
 
     public void startController() throws IOException {
 
+        ObjectMapper objectMapper = new ObjectMapper();
         int serverPort = 8000;
         HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
-        server.createContext("/clients", (exchange -> {
+        server.createContext("/clients/bills", (exchange -> {
+            String jsonOut;
             switch (exchange.getRequestMethod()) {
-//                case "POST":
-//                    System.out.println("Привет");
-//                    exchange.getRequestBody();
-//                    account = objectMapper.readValue(exchange.getRequestBody(), Account.class);
-//                    repository.postCity(account);
-//                    String jsonOut = objectMapper.writeValueAsString(account);
-//                    exchange.sendResponseHeaders(200, jsonOut.getBytes().length);
-//                    OutputStream output = exchange.getResponseBody();
-//                    output.write(jsonOut.getBytes());
-//                    output.flush();
-//                    exchange.close();
-//                    break;
-                case "GET":
+                case "POST":
                     try {
-                        Long billNumber = Long.valueOf(exchange.getRequestURI().toString().split("/")[2]);
-                        String jsonOut = accountService.getCardsByBillNumber(billNumber);
+                        CardRequestDTO requestDTO = objectMapper.readValue(exchange.getRequestBody(), CardRequestDTO.class);
+                        jsonOut = accountService.createCard(requestDTO);
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
-                        if (e.getClass() == NumberFormatException.class) {
-                            sendBadAnswer(exchange, "Некорректно задан url запрос");
-                        }
-                        sendBadAnswer(exchange, e.getMessage());
+                        catchExeption(e, exchange);
+                    }
+                    break;
+                case "GET":
+                    try {
+                        BillRequestDTO billNumber = objectMapper.readValue(exchange.getRequestBody(), BillRequestDTO.class);
+                        jsonOut = accountService.getCardsByBillNumber(billNumber);
+                        sendSuccessAnswer(exchange, jsonOut);
+                    } catch (Exception e) {
+                        catchExeption(e, exchange);
                     }
                     break;
                 default:
@@ -53,6 +56,13 @@ public class AccountController {
         }));
         server.setExecutor(null); // creates a default executor
         server.start();
+    }
+
+    private void catchExeption(Exception e, HttpExchange exchange) throws IOException {
+        if (e.getClass() == UnrecognizedPropertyException.class) {
+            sendBadAnswer(exchange, "Некорректное тело запроса");
+        }
+        sendBadAnswer(exchange, e.getMessage());
     }
 
     private void sendSuccessAnswer(HttpExchange exchange, String jsonOut) throws IOException {

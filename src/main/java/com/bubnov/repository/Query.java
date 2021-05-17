@@ -8,22 +8,22 @@ public class Query {
     public static final String CREATE_ACCOUNT_TABLE =
             "CREATE TABLE ACCOUNTS(\n" +
                     " id INT PRIMARY KEY AUTO_INCREMENT,\n" +
-                    " name VARCHAR(255)\n" +
+                    " name VARCHAR(255) NOT NULL\n" +
                     "                   );";
 
     public static final String CREATE_BILL_TABLE =
             "CREATE TABLE BILLS(\n" +
                     " id INT PRIMARY KEY AUTO_INCREMENT,\n" +
-                    " bill_number BIGINT(16),\n" +
-                    " account_id INT\n" +
+                    " bill_number VARCHAR(255) NOT NULL,\n" +
+                    " amount NUMERIC(19,2) NOT NULL,\n" +
+                    " account_id INT NOT NULL\n" +
                     "                   );";
 
     public static final String CREATE_CARD_TABLE =
             "CREATE TABLE CARDS(\n" +
                     " id INT PRIMARY KEY AUTO_INCREMENT,\n" +
-                    " card_number VARCHAR(255),\n" +
-                    " amount NUMERIC(19,2),\n" +
-                    " bill_number BIGINT(16)\n" +
+                    " card_number VARCHAR(255) NOT NULL,\n" +
+                    " bill_number VARCHAR(255) NOT NULL\n" +
                     "                   );";
 
     public static final String POST_START_ACCOUNTS =
@@ -34,21 +34,21 @@ public class Query {
                     "VALUES ('Максим');";
 
     public static final String POST_START_BILLS =
-            "INSERT INTO BILLS(BILL_NUMBER, ACCOUNT_ID)\n" +
-                    "VALUES (11111, 1);\n" +
+            "INSERT INTO BILLS(BILL_NUMBER, AMOUNT, ACCOUNT_ID)\n" +
+                    "VALUES ('11111', 50000, 1);\n" +
                     "\n" +
-                    "INSERT INTO BILLS(ACCOUNT_ID, BILL_NUMBER)\n" +
-                    "VALUES (22222, 2);";
+                    "INSERT INTO BILLS(BILL_NUMBER, AMOUNT, ACCOUNT_ID)\n" +
+                    "VALUES ('22222', 100000, 2);";
 
     public static final String POST_START_CARDS =
-            "INSERT INTO CARDS(CARD_NUMBER, AMOUNT, BILL_NUMBER)\n" +
-                    "VALUES (1111222233334444, 50000, 11111);\n" +
+            "INSERT INTO CARDS(CARD_NUMBER, BILL_NUMBER)\n" +
+                    "VALUES ('1111222233334444', '11111');\n" +
                     "\n" +
-                    "INSERT INTO CARDS(CARD_NUMBER, AMOUNT, BILL_NUMBER)\n" +
-                    "VALUES (1234123412341234, 5000, 11111);\n" +
+                    "INSERT INTO CARDS(CARD_NUMBER, BILL_NUMBER)\n" +
+                    "VALUES ('1234123412341234', '11111');\n" +
                     "\n" +
-                    "INSERT INTO CARDS(CARD_NUMBER, AMOUNT, BILL_NUMBER)\n" +
-                    "VALUES (1122223333444455, 75000, 22222);";
+                    "INSERT INTO CARDS(CARD_NUMBER, BILL_NUMBER)\n" +
+                    "VALUES ('1122223333444455', '22222');";
 
     public static List<String> startQueryList() {
         List<String> startQueryList = new ArrayList<>();

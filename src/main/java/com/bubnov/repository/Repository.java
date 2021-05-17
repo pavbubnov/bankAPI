@@ -1,8 +1,12 @@
 package com.bubnov.repository;
 
+import com.bubnov.controller.dto.CardRequestDTO;
+import com.bubnov.controller.dto.CardResponseDTO;
 import com.bubnov.entity.Account;
+import com.bubnov.entity.Bill;
 import com.bubnov.entity.Card;
 import com.bubnov.exception.DatabaseException;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,18 +65,40 @@ public class Repository {
 //        }
 //    }
 
-    public List<Card> getAllCardsByBillNumber(long billNumber) throws SQLException {
+    public List<CardResponseDTO> getAllCardsByBillNumber(String billNumber) throws SQLException {
         PreparedStatement preparedStatement = this.db.prepareStatement(
                 "SELECT * FROM CARDS WHERE BILL_NUMBER = (?)");
-        preparedStatement.setLong(1, billNumber);
+        preparedStatement.setString(1, billNumber);
         ResultSet resultSet = preparedStatement.executeQuery();
-        List<Card> cards = new ArrayList<>();
+        List<CardResponseDTO> cards = new ArrayList<>();
         while (resultSet.next()) {
-            Card card = new Card(resultSet.getInt("ID"), resultSet.getLong("CARD_NUMBER"),
-                    resultSet.getBigDecimal("AMOUNT"), resultSet.getLong("BILL_NUMBER"));
+            CardResponseDTO card = new CardResponseDTO(resultSet.getString("CARD_NUMBER"));
             cards.add(card);
         }
         return cards;
+    }
+
+    public CardResponseDTO createCard(CardRequestDTO card) throws SQLException {
+        PreparedStatement preparedStatement = db.prepareStatement(
+                "INSERT INTO CARDS(CARD_NUMBER, BILL_NUMBER) VALUES (?, ?);");
+        preparedStatement.setString(1, card.getCardNumber());
+        preparedStatement.setString(2, card.getBillNumber());
+        preparedStatement.execute();
+        return new CardResponseDTO(card);
+    }
+
+    public boolean checkBillExists(CardRequestDTO card) throws SQLException {
+
+        PreparedStatement preparedStatement =
+                db.prepareStatement("SELECT COUNT(1) FROM BILLS WHERE BILL_NUMBER = ?");
+        preparedStatement.setString(1, card.getBillNumber());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            if (resultSet.getInt(1) == 1){
+                return true;
+            }
+        }
+        return false;
     }
 
 }
