@@ -1,10 +1,11 @@
 package com.bubnov.service;
 
-import com.bubnov.controller.dto.BillRequestDTO;
-import com.bubnov.controller.dto.CardRequestDTO;
-import com.bubnov.controller.dto.CardResponseDTO;
+import com.bubnov.controller.dto.bill.BillRequestDTO;
+import com.bubnov.controller.dto.card.CardRequestDTO;
+import com.bubnov.controller.dto.card.CardResponseDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
+import com.bubnov.repository.BillRepository;
 import com.bubnov.repository.CardRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,11 +15,14 @@ import java.util.List;
 
 public class CardService {
 
+
     private final CardRepository cardRepository;
+    private final BillRepository billRepository;
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public CardService(CardRepository cardRepository) {
+    public CardService(CardRepository cardRepository, BillRepository billRepository) {
         this.cardRepository = cardRepository;
+        this.billRepository = billRepository;
     }
 
     public String getCardsByBillNumber(BillRequestDTO billNumber)
@@ -38,7 +42,7 @@ public class CardService {
     public String createCard(CardRequestDTO requestDTO) throws RequestException, JsonProcessingException {
         CardResponseDTO card;
         try {
-            if (!cardRepository.checkBillExists(requestDTO)){
+            if (!billRepository.checkBillExists(requestDTO)){
                 throw new RequestException("Счет: " + requestDTO.getBillNumber() + " не создан");
             } else if (!cardRepository.checkCardExists(requestDTO)) {
                 throw new RequestException("Карта: " + requestDTO.getCardNumber()+ " уже существует");

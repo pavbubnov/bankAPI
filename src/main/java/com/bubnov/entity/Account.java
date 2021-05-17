@@ -1,6 +1,5 @@
 package com.bubnov.entity;
 
-import java.util.List;
 import java.util.Objects;
 
 public class Account {

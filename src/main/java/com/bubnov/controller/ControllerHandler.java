@@ -13,9 +13,14 @@ import java.net.InetSocketAddress;
 public class ControllerHandler implements HttpHandler {
 
     private CardsController cardsController;
+    private BillsController billsController;
+    private DepositController depositController;
 
-    public ControllerHandler(CardsController cardsController) {
+    public ControllerHandler(CardsController cardsController, BillsController billsController,
+                             DepositController depositController) {
         this.cardsController = cardsController;
+        this.billsController = billsController;
+        this.depositController = depositController;
     }
 
     public void startController() throws IOException {
@@ -47,6 +52,41 @@ public class ControllerHandler implements HttpHandler {
             }
             exchange.close();
         }));
+
+        server.createContext("/clients/bills", (exchange -> {
+            String jsonOut;
+            switch (exchange.getRequestMethod()) {
+                case "GET":
+                    try {
+                        jsonOut = billsController.getAmount(exchange);
+                        sendSuccessAnswer(exchange, jsonOut);
+                    } catch (Exception e) {
+                        catchExeption(e, exchange);
+                    }
+                    break;
+                default:
+                    exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
+            }
+            exchange.close();
+        }));
+
+        server.createContext("/clients/deposits", (exchange -> {
+            String jsonOut;
+            switch (exchange.getRequestMethod()) {
+                case "POST":
+                    try {
+                        jsonOut = depositController.postDeposit(exchange);
+                        sendSuccessAnswer(exchange, jsonOut);
+                    } catch (Exception e) {
+                        catchExeption(e, exchange);
+                    }
+                    break;
+                default:
+                    exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
+            }
+            exchange.close();
+        }));
+
         server.setExecutor(null); // creates a default executor
         server.start();
     }

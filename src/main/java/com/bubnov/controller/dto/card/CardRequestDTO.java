@@ -1,6 +1,5 @@
-package com.bubnov.controller.dto;
+package com.bubnov.controller.dto.card;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class CardRequestDTO {

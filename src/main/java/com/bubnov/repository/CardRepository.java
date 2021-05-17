@@ -1,7 +1,7 @@
 package com.bubnov.repository;
 
-import com.bubnov.controller.dto.CardRequestDTO;
-import com.bubnov.controller.dto.CardResponseDTO;
+import com.bubnov.controller.dto.card.CardRequestDTO;
+import com.bubnov.controller.dto.card.CardResponseDTO;
 import com.bubnov.exception.DatabaseException;
 
 import java.sql.*;
@@ -14,7 +14,10 @@ public class CardRepository {
     private Connection db;
 
     private CardRepository() {
+    }
 
+    public void getConnection (Connection connection) {
+        db = connection;
     }
 
     public static CardRepository getInstance() {
@@ -24,27 +27,11 @@ public class CardRepository {
         return INSTANCE;
     }
 
-    public void getH2Connection() throws DatabaseException {
-        try {
-            this.db = DriverManager.getConnection("jdbc:h2:mem:");
-        } catch (SQLException throwables) {
-            throw new DatabaseException("Не удалось установить соединение с базой данных");
-        }
-    }
-
-    public void closeConnection() {
-        try {
-            this.db.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
     public void createStart(List<String> list) throws DatabaseException {
         PreparedStatement preparedStatement;
         for (int i = 0; i < list.size(); i++) {
             try {
-                preparedStatement = this.db.prepareStatement(list.get(i));
+                preparedStatement = db.prepareStatement(list.get(i));
                 preparedStatement.execute();
             } catch (SQLException throwables) {
                 throw new DatabaseException("Не заполнить базу данных начальными значениями");
@@ -52,18 +39,8 @@ public class CardRepository {
         }
     }
 
-//    public void postCity(Account account) {
-//        try {
-//            PreparedStatement preparedStatement = this.db.prepareStatement("INSERT INTO ACCOUNT(NAME) VALUES (?)");
-//            preparedStatement.setString(1, account.getNameOfPerson());
-//            preparedStatement.execute();
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//    }
-
     public List<CardResponseDTO> getAllCardsByBillNumber(String billNumber) throws SQLException {
-        PreparedStatement preparedStatement = this.db.prepareStatement(
+        PreparedStatement preparedStatement = db.prepareStatement(
                 "SELECT * FROM CARDS WHERE BILL_NUMBER = (?)");
         preparedStatement.setString(1, billNumber);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -82,19 +59,6 @@ public class CardRepository {
         preparedStatement.setString(2, card.getBillNumber());
         preparedStatement.execute();
         return new CardResponseDTO(card);
-    }
-
-    public boolean checkBillExists(CardRequestDTO card) throws SQLException {
-        PreparedStatement preparedStatement =
-                db.prepareStatement("SELECT COUNT(1) FROM BILLS WHERE BILL_NUMBER = ?");
-        preparedStatement.setString(1, card.getBillNumber());
-        ResultSet resultSet = preparedStatement.executeQuery();
-        while(resultSet.next()) {
-            if (resultSet.getInt(1) == 1){
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean checkCardExists(CardRequestDTO card) throws SQLException {

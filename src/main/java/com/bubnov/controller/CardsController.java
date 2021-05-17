@@ -1,7 +1,7 @@
 package com.bubnov.controller;
 
-import com.bubnov.controller.dto.BillRequestDTO;
-import com.bubnov.controller.dto.CardRequestDTO;
+import com.bubnov.controller.dto.bill.BillRequestDTO;
+import com.bubnov.controller.dto.card.CardRequestDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.service.CardService;
@@ -28,4 +28,10 @@ public class CardsController {
         BillRequestDTO billNumber = objectMapper.readValue(exchange.getRequestBody(), BillRequestDTO.class);
         return cardService.getCardsByBillNumber(billNumber);
     }
+
+
+
+
+
+
 }

@@ -26,6 +26,15 @@ public class Query {
                     " bill_number VARCHAR(255) NOT NULL\n" +
                     "                   );";
 
+    public static final String CREATE_DEPOSIT_TABLE =
+            "CREATE TABLE DEPOSITS(\n" +
+                    " id INT PRIMARY KEY AUTO_INCREMENT,\n" +
+                    " bill_number VARCHAR(255) NOT NULL,\n" +
+                    " amount NUMERIC(19,2) NOT NULL\n" +
+                    "                   );";
+
+
+
     public static final String POST_START_ACCOUNTS =
             "INSERT INTO ACCOUNTS(NAME)\n" +
                     "VALUES ('Павел');\n" +
@@ -55,6 +64,7 @@ public class Query {
         startQueryList.add(CREATE_ACCOUNT_TABLE);
         startQueryList.add(CREATE_BILL_TABLE);
         startQueryList.add(CREATE_CARD_TABLE);
+        startQueryList.add(CREATE_DEPOSIT_TABLE);
         startQueryList.add(POST_START_ACCOUNTS);
         startQueryList.add(POST_START_BILLS);
         startQueryList.add(POST_START_CARDS);

@@ -1,4 +1,4 @@
-package com.bubnov.controller.dto;
+package com.bubnov.controller.dto.card;
 
 import java.util.Objects;
 
