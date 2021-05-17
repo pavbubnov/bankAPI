@@ -1,26 +1,21 @@
 package com.bubnov.controller;
 
-import com.bubnov.controller.dto.BillRequestDTO;
-import com.bubnov.controller.dto.CardRequestDTO;
-import com.bubnov.entity.Card;
-import com.bubnov.exception.RequestException;
-import com.bubnov.service.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
-public class AccountController {
+public class ControllerHandler implements HttpHandler {
 
-    private final AccountService accountService;
+    private CardsController cardsController;
 
-    public AccountController(AccountService accountService) {
-        this.accountService = accountService;
+    public ControllerHandler(CardsController cardsController) {
+        this.cardsController = cardsController;
     }
 
     public void startController() throws IOException {
@@ -28,13 +23,12 @@ public class AccountController {
         ObjectMapper objectMapper = new ObjectMapper();
         int serverPort = 8000;
         HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
-        server.createContext("/clients/bills", (exchange -> {
+        server.createContext("/clients/cards", (exchange -> {
             String jsonOut;
             switch (exchange.getRequestMethod()) {
                 case "POST":
                     try {
-                        CardRequestDTO requestDTO = objectMapper.readValue(exchange.getRequestBody(), CardRequestDTO.class);
-                        jsonOut = accountService.createCard(requestDTO);
+                        jsonOut = cardsController.postCard(exchange);
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         catchExeption(e, exchange);
@@ -42,8 +36,7 @@ public class AccountController {
                     break;
                 case "GET":
                     try {
-                        BillRequestDTO billNumber = objectMapper.readValue(exchange.getRequestBody(), BillRequestDTO.class);
-                        jsonOut = accountService.getCardsByBillNumber(billNumber);
+                        jsonOut = cardsController.getCards(exchange);
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         catchExeption(e, exchange);
@@ -82,5 +75,8 @@ public class AccountController {
         exchange.close();
     }
 
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
 
+    }
 }

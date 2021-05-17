@@ -2,27 +2,24 @@ package com.bubnov.repository;
 
 import com.bubnov.controller.dto.CardRequestDTO;
 import com.bubnov.controller.dto.CardResponseDTO;
-import com.bubnov.entity.Account;
-import com.bubnov.entity.Bill;
-import com.bubnov.entity.Card;
 import com.bubnov.exception.DatabaseException;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Repository {
+public class CardRepository {
 
-    private static Repository INSTANCE;
+    private static CardRepository INSTANCE;
     private Connection db;
 
-    private Repository() {
+    private CardRepository() {
 
     }
 
-    public static Repository getInstance() {
+    public static CardRepository getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new Repository();
+            INSTANCE = new CardRepository();
         }
         return INSTANCE;
     }
@@ -88,13 +85,25 @@ public class Repository {
     }
 
     public boolean checkBillExists(CardRequestDTO card) throws SQLException {
-
         PreparedStatement preparedStatement =
                 db.prepareStatement("SELECT COUNT(1) FROM BILLS WHERE BILL_NUMBER = ?");
         preparedStatement.setString(1, card.getBillNumber());
         ResultSet resultSet = preparedStatement.executeQuery();
         while(resultSet.next()) {
             if (resultSet.getInt(1) == 1){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkCardExists(CardRequestDTO card) throws SQLException {
+        PreparedStatement preparedStatement =
+                db.prepareStatement("SELECT COUNT(1) FROM CARDS WHERE CARD_NUMBER = ?");
+        preparedStatement.setString(1, card.getCardNumber());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            if (resultSet.getInt(1) == 0){
                 return true;
             }
         }
