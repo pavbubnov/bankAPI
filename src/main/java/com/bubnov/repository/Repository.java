@@ -3,7 +3,6 @@ package com.bubnov.repository;
 import com.bubnov.entity.Account;
 import com.bubnov.entity.Card;
 import com.bubnov.exception.DatabaseException;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +23,12 @@ public class Repository {
         return INSTANCE;
     }
 
-    public void getH2Connection() {
-
-//        this.db = DriverManager.getConnection("jdbc:h2:file:/Users/a19189145/Documents" +
-//                "/workProjects/bankAPI/src/main/resources/database;MV_STORE=false");
+    public void getH2Connection() throws DatabaseException {
         try {
-            this.db = DriverManager.getConnection("jdbc:h2:mem:");
+            this.db = DriverManager.getConnection("jdbc:h2:mecdm:");
         } catch (SQLException throwables) {
             throw new DatabaseException("Не удалось установить соединение с базой данных");
         }
-
     }
 
     public void closeConnection() {
@@ -44,19 +39,15 @@ public class Repository {
         }
     }
 
-    public void createStart(List<String> list) {
+    public void createStart(List<String> list) throws DatabaseException {
         PreparedStatement preparedStatement;
-
         for (int i = 0; i < list.size(); i++) {
             try {
-//                Statement statement = db.createStatement();
-//                statement.execute(list.get(i));
                 preparedStatement = this.db.prepareStatement(list.get(i));
                 preparedStatement.execute();
             } catch (SQLException throwables) {
                 throw new DatabaseException("Не заполнить базу данных начальными значениями");
             }
-
         }
     }
 
@@ -70,25 +61,18 @@ public class Repository {
         }
     }
 
-    public List<Card> getAllCardsByBillId(int billId) {
-        try {
-            PreparedStatement preparedStatement = this.db.prepareStatement(
-                    "SELECT * FROM CARDS WHERE BILL_ID = (?)");
-            preparedStatement.setInt(1, billId);
-//            PreparedStatement preparedStatement = this.db.prepareStatement(
-//                    "SELECT * FROM ACCOUNTS");
-            ResultSet resultSet = preparedStatement.executeQuery();
-            List<Card> cards = new ArrayList<>();
-            while (resultSet.next()) {
-                Card card = new Card(resultSet.getInt("ID"), resultSet.getString("NUMBER"),
-                        resultSet.getBigDecimal("AMOUNT"), resultSet.getInt("bill_id"));
-                cards.add(card);
-            }
-            return cards;
-        } catch (SQLException throwables) {
-            throw new DatabaseException("Не удалось вывести карты по счету: " + billId);
+    public List<Card> getAllCardsByBillId(int billId) throws SQLException {
+        PreparedStatement preparedStatement = this.db.prepareStatement(
+                "SELECT * FROM CARDS WHERE BILL_ID = (?)");
+        preparedStatement.setInt(1, billId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<Card> cards = new ArrayList<>();
+        while (resultSet.next()) {
+            Card card = new Card(resultSet.getInt("ID"), resultSet.getString("NUMBER"),
+                    resultSet.getBigDecimal("AMOUNT"), resultSet.getInt("bill_id"));
+            cards.add(card);
         }
+        return cards;
     }
-
-
 }
+
