@@ -6,26 +6,26 @@ import java.util.Objects;
 public class Card {
 
     private int id;
-    private String number;
+    private Long cardNumber;
     private BigDecimal amount;
-    private int bill_id;
+    private Long billNumber;
 
-    public Card(int id, String number, BigDecimal amount, int bill_id) {
+    public Card(int id, Long cardNumber, BigDecimal amount, Long billNumber) {
         this.id = id;
-        this.number = number;
+        this.cardNumber = cardNumber;
         this.amount = amount;
-        this.bill_id = bill_id;
+        this.billNumber = billNumber;
     }
 
     public Card() {
     }
 
-    public int getBill_id() {
-        return bill_id;
+    public Long getBillNumber() {
+        return billNumber;
     }
 
-    public void setBill_id(int bill_id) {
-        this.bill_id = bill_id;
+    public void setBillNumber(Long billNumber) {
+        this.billNumber = billNumber;
     }
 
     public int getId() {
@@ -36,12 +36,12 @@ public class Card {
         this.id = id;
     }
 
-    public String getNumber() {
-        return number;
+    public Long getCardNumber() {
+        return cardNumber;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setCardNumber(Long cardNumber) {
+        this.cardNumber = cardNumber;
     }
 
     public BigDecimal getAmount() {
@@ -57,21 +57,22 @@ public class Card {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
-        return id == card.id && bill_id == card.bill_id && number.equals(card.number) && amount.equals(card.amount);
+        return id == card.id && billNumber == card.billNumber && cardNumber.equals(card.cardNumber)
+                && amount.equals(card.amount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, number, amount, bill_id);
+        return Objects.hash(id, cardNumber, amount, billNumber);
     }
 
     @Override
     public String toString() {
         return "Card{" +
                 "id=" + id +
-                ", number='" + number + '\'' +
+                ", cardNumber=" + cardNumber +
                 ", amount=" + amount +
-                ", bill_id=" + bill_id +
+                ", billNumber=" + billNumber +
                 '}';
     }
 }

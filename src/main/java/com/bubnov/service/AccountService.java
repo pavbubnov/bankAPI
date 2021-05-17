@@ -19,15 +19,15 @@ public class AccountService {
         this.repository = repository;
     }
 
-    public String getCardsByBillId(int billId) throws JsonProcessingException, RequestException, DatabaseException {
+    public String getCardsByBillNumber(Long billNumber) throws JsonProcessingException, RequestException, DatabaseException {
         List<Card> cards;
         try {
-            cards = repository.getAllCardsByBillId(billId);
+            cards = repository.getAllCardsByBillNumber(billNumber);
         } catch (SQLException throwables) {
             throw new DatabaseException("Ошибка базы данных");
         }
         if (cards.size() == 0) {
-            throw new RequestException("Не удалось найти карты по счету: " + billId);
+            throw new RequestException("Не удалось найти карты по счету: " + billNumber);
         }
         return objectMapper.writeValueAsString(cards);
     }

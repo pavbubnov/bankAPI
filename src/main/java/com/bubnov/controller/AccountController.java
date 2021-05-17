@@ -1,6 +1,5 @@
 package com.bubnov.controller;
 
-import com.bubnov.entity.Account;
 import com.bubnov.service.AccountService;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -37,8 +36,8 @@ public class AccountController {
 //                    break;
                 case "GET":
                     try {
-                        int billId = Integer.valueOf(exchange.getRequestURI().toString().split("/")[2]);
-                        String jsonOut = accountService.getCardsByBillId(billId);
+                        Long billNumber = Long.valueOf(exchange.getRequestURI().toString().split("/")[2]);
+                        String jsonOut = accountService.getCardsByBillNumber(billNumber);
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         if (e.getClass() == NumberFormatException.class) {
@@ -65,6 +64,7 @@ public class AccountController {
     }
 
     private void sendBadAnswer(HttpExchange exchange, String jsonOut) throws IOException {
+
         exchange.sendResponseHeaders(400, jsonOut.getBytes().length);
         OutputStream output = exchange.getResponseBody();
         output.write(jsonOut.getBytes());
