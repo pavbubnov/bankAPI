@@ -27,18 +27,6 @@ public class CardRepository {
         return INSTANCE;
     }
 
-    public void createStart(List<String> list) throws DatabaseException {
-        PreparedStatement preparedStatement;
-        for (int i = 0; i < list.size(); i++) {
-            try {
-                preparedStatement = db.prepareStatement(list.get(i));
-                preparedStatement.execute();
-            } catch (SQLException throwables) {
-                throw new DatabaseException("Не заполнить базу данных начальными значениями");
-            }
-        }
-    }
-
     public List<CardResponseDTO> getAllCardsByBillNumber(String billNumber) throws SQLException {
         PreparedStatement preparedStatement = db.prepareStatement(
                 "SELECT * FROM CARDS WHERE BILL_NUMBER = (?)");

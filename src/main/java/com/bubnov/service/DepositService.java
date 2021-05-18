@@ -34,6 +34,8 @@ public class DepositService {
             BillResponseDTO billByNumber = billRepository.getBillByNumber(requestDTO.getBillNumber());
             if (billByNumber.getAmount() == null) {
                 throw new RequestException("Не удалось найти счет: " + requestDTO.getBillNumber());
+            } else if (requestDTO.getAmount().signum() <= 0) {
+                throw new RequestException("Сумма пополнения должна быть положительной");
             }
             BigDecimal amountAfter = requestDTO.getAmount().add(billByNumber.getAmount());
             response.setAmountAfter(amountAfter);

@@ -9,9 +9,12 @@ import com.bubnov.repository.*;
 import com.bubnov.service.BillService;
 import com.bubnov.service.CardService;
 import com.bubnov.service.DepositService;
+import org.h2.tools.RunScript;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class Application {
 
@@ -25,8 +28,8 @@ public class Application {
             cardRepository.getConnection(connection);
             billRepository.getConnection(connection);
             depositRepository.getConnection(connection);
-            cardRepository.createStart(Query.startQueryList());
-        } catch (DatabaseException e) {
+            RunScript.execute(connection, new FileReader("/Users/a19189145/Documents/workProjects/bankAPI/src/main/resources/startDatabase.sql"));
+        } catch (DatabaseException | SQLException e) {
             e.printStackTrace();
         }
         CardService cardService = new CardService(cardRepository, billRepository);
@@ -38,5 +41,6 @@ public class Application {
         ControllerHandler controllerHandler = new ControllerHandler(cardsController, billsController, depositController);
         controllerHandler.startController();
     }
+
 
 }
