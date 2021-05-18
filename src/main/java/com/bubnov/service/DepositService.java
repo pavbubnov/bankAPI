@@ -40,6 +40,7 @@ public class DepositService {
             BigDecimal amountAfter = requestDTO.getAmount().add(billByNumber.getAmount());
             response.setAmountAfter(amountAfter);
             billRepository.changeAmount(requestDTO.getBillNumber(), amountAfter);
+            depositRepository.createDeposit(requestDTO);
         } catch (SQLException throwables) {
             throw new RequestException("Не пополнить счет: " + requestDTO.getBillNumber());
         }

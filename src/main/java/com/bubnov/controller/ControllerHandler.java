@@ -77,6 +77,7 @@ public class ControllerHandler implements HttpHandler {
                     try {
                         jsonOut = depositController.postDeposit(exchange);
                         sendSuccessAnswer(exchange, jsonOut);
+                        //
                     } catch (Exception e) {
                         catchExeption(e, exchange);
                     }
