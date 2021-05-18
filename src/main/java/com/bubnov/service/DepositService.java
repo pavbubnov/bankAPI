@@ -32,11 +32,14 @@ public class DepositService {
         response.setAmountDeposit(requestDTO.getAmount());
         try {
             BillResponseDTO billByNumber = billRepository.getBillByNumber(requestDTO.getBillNumber());
+            if (billByNumber.getAmount() == null) {
+                throw new RequestException("Не удалось найти счет: " + requestDTO.getBillNumber());
+            }
             BigDecimal amountAfter = requestDTO.getAmount().add(billByNumber.getAmount());
             response.setAmountAfter(amountAfter);
             billRepository.changeAmount(requestDTO.getBillNumber(), amountAfter);
         } catch (SQLException throwables) {
-            throw new RequestException("Не удалось найти счет: " + requestDTO.getBillNumber());
+            throw new RequestException("Не пополнить счет: " + requestDTO.getBillNumber());
         }
         return objectMapper.writeValueAsString(response);
     }
