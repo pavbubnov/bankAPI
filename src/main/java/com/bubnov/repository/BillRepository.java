@@ -13,11 +13,17 @@ public class BillRepository {
 
     private static BillRepository INSTANCE;
     private Connection db;
+    private static final String SELECT_BILLS_BY_BILL_NUMBER = "SELECT * FROM BILLS WHERE BILL_NUMBER = (?)";
+    private static final String UPDATE_BILLS_BY_BILL_NUMBER = "UPDATE BILLS SET AMOUNT = ? WHERE BILL_NUMBER = ?";
+    private static final String ARE_BILLS_EXISTS = "SELECT COUNT(1) FROM BILLS WHERE BILL_NUMBER = ?";
+    private static final String COLUMN_AMOUNT = "AMOUNT";
+    private static final String COLUMN_ACCOUNT_ID = "ACCOUNT_ID";
+
 
     private BillRepository() {
     }
 
-    public void getConnection (Connection connection) {
+    public void getConnection(Connection connection) {
         db = connection;
     }
 
@@ -29,25 +35,23 @@ public class BillRepository {
     }
 
     public BillResponseDTO getBillByNumber(String billNumber) throws SQLException {
-        PreparedStatement preparedStatement = db.prepareStatement(
-                "SELECT * FROM BILLS WHERE BILL_NUMBER = (?)");
+        PreparedStatement preparedStatement = db.prepareStatement(SELECT_BILLS_BY_BILL_NUMBER);
         preparedStatement.setString(1, billNumber);
         ResultSet resultSet = preparedStatement.executeQuery();
         BillResponseDTO bill = new BillResponseDTO();
         while (resultSet.next()) {
-            bill.setAmount(resultSet.getBigDecimal("AMOUNT"));
-            bill.setAccountId(resultSet.getInt("ACCOUNT_ID"));
+            bill.setAmount(resultSet.getBigDecimal(COLUMN_AMOUNT));
+            bill.setAccountId(resultSet.getInt(COLUMN_ACCOUNT_ID));
         }
         return bill;
     }
 
     public boolean checkBillExists(CardRequestDTO card) throws SQLException {
-        PreparedStatement preparedStatement =
-                db.prepareStatement("SELECT COUNT(1) FROM BILLS WHERE BILL_NUMBER = ?");
+        PreparedStatement preparedStatement = db.prepareStatement(ARE_BILLS_EXISTS);
         preparedStatement.setString(1, card.getBillNumber());
         ResultSet resultSet = preparedStatement.executeQuery();
-        while(resultSet.next()) {
-            if (resultSet.getInt(1) == 1){
+        while (resultSet.next()) {
+            if (resultSet.getInt(1) == 1) {
                 return true;
             }
         }
@@ -55,8 +59,7 @@ public class BillRepository {
     }
 
     public void changeAmount(String billNumber, BigDecimal amount) throws SQLException {
-        PreparedStatement preparedStatement =
-                db.prepareStatement("UPDATE BILLS SET AMOUNT = ? WHERE BILL_NUMBER = ?");
+        PreparedStatement preparedStatement = db.prepareStatement(UPDATE_BILLS_BY_BILL_NUMBER);
         preparedStatement.setBigDecimal(1, amount);
         preparedStatement.setString(2, billNumber);
         preparedStatement.execute();

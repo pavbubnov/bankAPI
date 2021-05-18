@@ -33,24 +33,4 @@ public class DepositRequestDTO {
         this.amount = amount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DepositRequestDTO that = (DepositRequestDTO) o;
-        return billNumber.equals(that.billNumber) && amount.equals(that.amount);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(billNumber, amount);
-    }
-
-    @Override
-    public String toString() {
-        return "DepositRequestDTO{" +
-                "billNumber='" + billNumber + '\'' +
-                ", amount=" + amount +
-                '}';
-    }
 }
