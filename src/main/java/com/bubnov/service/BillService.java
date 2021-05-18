@@ -19,7 +19,8 @@ public class BillService {
         this.billRepository = billRepository;
     }
 
-    public String getAmount (BillRequestDTO requestDTO) throws DatabaseException, JsonProcessingException, RequestException {
+    public String getAmount(BillRequestDTO requestDTO) throws DatabaseException, JsonProcessingException,
+            RequestException {
         try {
             BillResponseDTO billByNumber = billRepository.getBillByNumber(requestDTO.getBillNumber());
             if (billByNumber.getAmount() == null) {

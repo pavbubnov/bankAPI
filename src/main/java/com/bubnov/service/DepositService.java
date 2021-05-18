@@ -26,7 +26,8 @@ public class DepositService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public String postDeposit (DepositRequestDTO requestDTO) throws DatabaseException, JsonProcessingException, RequestException {
+    public String postDeposit(DepositRequestDTO requestDTO) throws DatabaseException, JsonProcessingException,
+            RequestException {
         DepositResponseDTO response = new DepositResponseDTO();
         response.setBillNumber(requestDTO.getBillNumber());
         response.setAmountDeposit(requestDTO.getAmount());
