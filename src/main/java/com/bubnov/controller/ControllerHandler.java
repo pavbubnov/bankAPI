@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
@@ -34,7 +35,7 @@ public class ControllerHandler {
             switch (exchange.getRequestMethod()) {
                 case POST:
                     try {
-                        jsonOut = cardsController.postCard(exchange);
+                        jsonOut = cardsController.postCard(exchange.getRequestBody());
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         catchException(e, exchange);
@@ -42,7 +43,7 @@ public class ControllerHandler {
                     break;
                 case GET:
                     try {
-                        jsonOut = cardsController.getCards(exchange);
+                        jsonOut = cardsController.getCards(exchange.getRequestBody());
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         catchException(e, exchange);
@@ -59,7 +60,7 @@ public class ControllerHandler {
             switch (exchange.getRequestMethod()) {
                 case GET:
                     try {
-                        jsonOut = billsController.getAmount(exchange);
+                        jsonOut = billsController.getAmount(exchange.getRequestBody());
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         catchException(e, exchange);
@@ -76,7 +77,7 @@ public class ControllerHandler {
             switch (exchange.getRequestMethod()) {
                 case POST:
                     try {
-                        jsonOut = depositController.postDeposit(exchange);
+                        jsonOut = depositController.postDeposit(exchange.getRequestBody());
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         catchException(e, exchange);

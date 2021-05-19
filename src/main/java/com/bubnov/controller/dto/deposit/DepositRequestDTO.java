@@ -45,4 +45,12 @@ public class DepositRequestDTO {
     public int hashCode() {
         return Objects.hash(billNumber, amount);
     }
+
+    @Override
+    public String toString() {
+        return "DepositRequestDTO{" +
+                "billNumber='" + billNumber + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
 }

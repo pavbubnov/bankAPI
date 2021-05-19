@@ -1,4 +1,4 @@
-package com.bubnov.service;
+package com.bubnov.controller;
 
 import com.bubnov.controller.dto.bill.AmountResponseDTO;
 import com.bubnov.controller.dto.bill.BillRequestDTO;
@@ -6,22 +6,23 @@ import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.repository.BillRepository;
 import com.bubnov.repository.H2Datasource;
+import com.bubnov.service.BillService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.h2.tools.RunScript;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
-class BillServiceTest {
+class BillsControllerTest {
 
     BillRepository billRepository = BillRepository.getInstance();
     H2Datasource datasource = new H2Datasource();
@@ -29,6 +30,8 @@ class BillServiceTest {
     String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
     String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
     BillService billService;
+    BillsController billsController;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() throws DatabaseException, FileNotFoundException, SQLException {
@@ -36,6 +39,7 @@ class BillServiceTest {
         RunScript.execute(db, new FileReader(databaseScript));
         billRepository.setDatabasePath(databasePath);
         billService = new BillService(billRepository);
+        billsController = new BillsController(billService);
     }
 
     @AfterEach
@@ -45,18 +49,21 @@ class BillServiceTest {
     }
 
     @Test
-    void getAmount() throws RequestException, DatabaseException, JsonProcessingException {
+    void getAmount() throws IOException, DatabaseException, RequestException {
         BillRequestDTO requestDTO = new BillRequestDTO("11111");
-        AmountResponseDTO amount = billService.getAmount(requestDTO);
+        InputStream input = new ByteArrayInputStream(objectMapper.writeValueAsBytes(requestDTO));
+        String out = billsController.getAmount(input);
         AmountResponseDTO amountExpect = new AmountResponseDTO(BigDecimal.valueOf(50000.05));
-        Assertions.assertEquals(amountExpect, amount);
+        String jsonExpect = objectMapper.writeValueAsString(amountExpect);
+        Assertions.assertEquals(out, jsonExpect);
     }
 
     @Test
-    void getAmountThrow() {
+    void getAmountThrow() throws JsonProcessingException {
         BillRequestDTO requestDTOBad = new BillRequestDTO("11112");
+        InputStream input = new ByteArrayInputStream(objectMapper.writeValueAsBytes(requestDTOBad));
         Throwable throwable = assertThrows(RequestException.class, () -> {
-            billService.getAmount(requestDTOBad);
+            billsController.getAmount(input);
         });
         Assertions.assertEquals(throwable.getMessage(), "Счет : " + requestDTOBad.getBillNumber() + " не найден");
     }

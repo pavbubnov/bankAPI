@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class CardsController {
 
@@ -19,13 +20,13 @@ public class CardsController {
     }
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public String postCard (HttpExchange exchange) throws IOException, RequestException {
-        CardRequestDTO requestDTO = objectMapper.readValue(exchange.getRequestBody(), CardRequestDTO.class);
+    public String postCard (InputStream input) throws IOException, RequestException {
+        CardRequestDTO requestDTO = objectMapper.readValue(input, CardRequestDTO.class);
         return objectMapper.writeValueAsString(cardService.createCard(requestDTO));
     }
 
-    public String getCards (HttpExchange exchange) throws RequestException, DatabaseException, IOException {
-        BillRequestDTO billNumber = objectMapper.readValue(exchange.getRequestBody(), BillRequestDTO.class);
+    public String getCards (InputStream input) throws RequestException, DatabaseException, IOException {
+        BillRequestDTO billNumber = objectMapper.readValue(input, BillRequestDTO.class);
         return objectMapper.writeValueAsString(cardService.getCardsByBillNumber(billNumber));
     }
 

@@ -5,9 +5,9 @@ import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.service.BillService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class BillsController {
 
@@ -18,8 +18,8 @@ public class BillsController {
         this.billService = billService;
     }
 
-    public String getAmount(HttpExchange exchange) throws RequestException, DatabaseException, IOException {
-        BillRequestDTO billNumber = objectMapper.readValue(exchange.getRequestBody(), BillRequestDTO.class);
+    public String getAmount(InputStream input) throws RequestException, DatabaseException, IOException {
+        BillRequestDTO billNumber = objectMapper.readValue(input, BillRequestDTO.class);
         return objectMapper.writeValueAsString(billService.getAmount(billNumber));
     }
 

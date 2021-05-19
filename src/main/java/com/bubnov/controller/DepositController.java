@@ -5,9 +5,8 @@ import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.service.DepositService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
-
 import java.io.IOException;
+import java.io.InputStream;
 
 public class DepositController {
 
@@ -19,8 +18,8 @@ public class DepositController {
         this.depositService = depositService;
     }
 
-    public String postDeposit (HttpExchange exchange) throws IOException, RequestException, DatabaseException {
-        DepositRequestDTO requestDTO = objectMapper.readValue(exchange.getRequestBody(), DepositRequestDTO.class);
+    public String postDeposit (InputStream input) throws IOException, RequestException, DatabaseException {
+        DepositRequestDTO requestDTO = objectMapper.readValue(input, DepositRequestDTO.class);
         return objectMapper.writeValueAsString(depositService.postDeposit(requestDTO));
     }
 

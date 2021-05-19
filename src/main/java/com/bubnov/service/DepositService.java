@@ -8,7 +8,6 @@ import com.bubnov.exception.RequestException;
 import com.bubnov.repository.BillRepository;
 import com.bubnov.repository.DepositRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
