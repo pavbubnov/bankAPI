@@ -63,11 +63,11 @@ public class CardRepository {
         }
     }
 
-    public boolean checkCardExists(CardRequestDTO card) throws SQLException, DatabaseException {
+    public boolean checkCardExists(String cardNumber) throws SQLException, DatabaseException {
         try (Connection db = datasource.setH2Connection(databasePath);
              PreparedStatement preparedStatement = db.prepareStatement(IS_CARD_EXIST);
         ) {
-            preparedStatement.setString(1, card.getCardNumber());
+            preparedStatement.setString(1, cardNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 if (resultSet.getInt(1) == 0) {

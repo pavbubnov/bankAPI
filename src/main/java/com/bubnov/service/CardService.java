@@ -42,9 +42,9 @@ public class CardService {
     public String createCard(CardRequestDTO requestDTO) throws RequestException, JsonProcessingException {
         CardResponseDTO card;
         try {
-            if (!billRepository.checkBillExists(requestDTO)) {
+            if (!billRepository.checkBillExists(requestDTO.getBillNumber())) {
                 throw new RequestException("Счет " + requestDTO.getBillNumber() + " не создан");
-            } else if (!cardRepository.checkCardExists(requestDTO)) {
+            } else if (!cardRepository.checkCardExists(requestDTO.getCardNumber())) {
                 throw new RequestException("Карта " + requestDTO.getCardNumber() + " уже существует");
             }
             card = cardRepository.createCard(requestDTO);

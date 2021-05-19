@@ -3,7 +3,6 @@ package com.bubnov.repository;
 import com.bubnov.controller.dto.bill.BillResponseDTO;
 import com.bubnov.controller.dto.card.CardRequestDTO;
 import com.bubnov.exception.DatabaseException;
-
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,11 +53,11 @@ public class BillRepository {
         }
     }
 
-    public boolean checkBillExists(CardRequestDTO card) throws SQLException, DatabaseException {
+    public boolean checkBillExists(String cardNumber) throws SQLException, DatabaseException {
         try (Connection db = datasource.setH2Connection(databasePath);
              PreparedStatement preparedStatement = db.prepareStatement(ARE_BILLS_EXISTS);
         ) {
-            preparedStatement.setString(1, card.getBillNumber());
+            preparedStatement.setString(1, cardNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 if (resultSet.getInt(1) == 1) {

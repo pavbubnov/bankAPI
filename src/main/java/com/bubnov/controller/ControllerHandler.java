@@ -100,6 +100,7 @@ public class ControllerHandler {
     }
 
     private void sendSuccessAnswer(HttpExchange exchange, String jsonOut) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(200, jsonOut.getBytes().length);
         OutputStream output = exchange.getResponseBody();
         output.write(jsonOut.getBytes());
