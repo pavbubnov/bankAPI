@@ -25,4 +25,16 @@ public class CardResponseDTO {
         this.cardNumber = cardNumber;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CardResponseDTO that = (CardResponseDTO) o;
+        return Objects.equals(cardNumber, that.cardNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cardNumber);
+    }
 }

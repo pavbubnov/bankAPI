@@ -5,10 +5,8 @@ import com.bubnov.entity.Deposit;
 import com.bubnov.exception.DatabaseException;
 import org.h2.tools.RunScript;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
@@ -19,8 +17,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class DepositRepositoryTest {
 

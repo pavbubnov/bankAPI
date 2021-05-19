@@ -21,12 +21,12 @@ public class CardsController {
 
     public String postCard (HttpExchange exchange) throws IOException, RequestException {
         CardRequestDTO requestDTO = objectMapper.readValue(exchange.getRequestBody(), CardRequestDTO.class);
-        return cardService.createCard(requestDTO);
+        return objectMapper.writeValueAsString(cardService.createCard(requestDTO));
     }
 
     public String getCards (HttpExchange exchange) throws RequestException, DatabaseException, IOException {
         BillRequestDTO billNumber = objectMapper.readValue(exchange.getRequestBody(), BillRequestDTO.class);
-        return cardService.getCardsByBillNumber(billNumber);
+        return objectMapper.writeValueAsString(cardService.getCardsByBillNumber(billNumber));
     }
 
 

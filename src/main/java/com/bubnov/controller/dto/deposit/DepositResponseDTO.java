@@ -48,4 +48,17 @@ public class DepositResponseDTO {
         this.amountAfter = amountAfter;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DepositResponseDTO that = (DepositResponseDTO) o;
+        return Objects.equals(billNumber, that.billNumber) && Objects.equals(amountDeposit, that.amountDeposit)
+                && Objects.equals(amountAfter, that.amountAfter);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(billNumber, amountDeposit, amountAfter);
+    }
 }

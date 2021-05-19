@@ -20,7 +20,7 @@ public class BillsController {
 
     public String getAmount(HttpExchange exchange) throws RequestException, DatabaseException, IOException {
         BillRequestDTO billNumber = objectMapper.readValue(exchange.getRequestBody(), BillRequestDTO.class);
-        return billService.getAmount(billNumber);
+        return objectMapper.writeValueAsString(billService.getAmount(billNumber));
     }
 
 

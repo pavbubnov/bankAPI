@@ -13,7 +13,6 @@ import com.bubnov.service.BillService;
 import com.bubnov.service.CardService;
 import com.bubnov.service.DepositService;
 import org.h2.tools.RunScript;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

@@ -8,25 +8,22 @@ import com.bubnov.exception.RequestException;
 import com.bubnov.repository.BillRepository;
 import com.bubnov.repository.CardRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class CardService {
 
-
     private final CardRepository cardRepository;
     private final BillRepository billRepository;
-    ObjectMapper objectMapper = new ObjectMapper();
 
     public CardService(CardRepository cardRepository, BillRepository billRepository) {
         this.cardRepository = cardRepository;
         this.billRepository = billRepository;
     }
 
-    public String getCardsByBillNumber(BillRequestDTO billNumber)
-            throws JsonProcessingException, RequestException, DatabaseException {
+    public List<CardResponseDTO> getCardsByBillNumber(BillRequestDTO billNumber)
+            throws  RequestException, DatabaseException {
         List<CardResponseDTO> cards;
         try {
             cards = cardRepository.getAllCardsByBillNumber(billNumber.getBillNumber());
@@ -36,10 +33,10 @@ public class CardService {
         if (cards.size() == 0) {
             throw new RequestException("Не удалось найти карты по счету: " + billNumber.getBillNumber());
         }
-        return objectMapper.writeValueAsString(cards);
+        return cards;
     }
 
-    public String createCard(CardRequestDTO requestDTO) throws RequestException, JsonProcessingException {
+    public CardResponseDTO createCard(CardRequestDTO requestDTO) throws RequestException {
         CardResponseDTO card;
         try {
             if (!billRepository.checkBillExists(requestDTO.getBillNumber())) {
@@ -51,8 +48,6 @@ public class CardService {
         } catch (Exception e) {
             throw new RequestException(e.getMessage());
         }
-        return objectMapper.writeValueAsString(card);
+        return card;
     }
-
-
 }

@@ -18,15 +18,12 @@ public class DepositService {
     private final DepositRepository depositRepository;
     private final BillRepository billRepository;
 
-
     public DepositService(DepositRepository depositRepository, BillRepository billRepository) {
         this.depositRepository = depositRepository;
         this.billRepository = billRepository;
     }
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    public String postDeposit (DepositRequestDTO requestDTO) throws DatabaseException, JsonProcessingException,
+    public DepositResponseDTO postDeposit (DepositRequestDTO requestDTO) throws DatabaseException, JsonProcessingException,
             RequestException {
         DepositResponseDTO response = new DepositResponseDTO();
         response.setBillNumber(requestDTO.getBillNumber());
@@ -43,8 +40,8 @@ public class DepositService {
             billRepository.changeAmount(requestDTO.getBillNumber(), amountAfter);
             depositRepository.createDeposit(requestDTO);
         } catch (SQLException throwables) {
-            throw new RequestException("Не пополнить счет: " + requestDTO.getBillNumber());
+            throw new RequestException("Не удалось пополнить счет: " + requestDTO.getBillNumber());
         }
-        return objectMapper.writeValueAsString(response);
+        return response;
     }
 }

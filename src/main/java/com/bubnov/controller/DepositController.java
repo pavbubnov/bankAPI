@@ -21,7 +21,7 @@ public class DepositController {
 
     public String postDeposit (HttpExchange exchange) throws IOException, RequestException, DatabaseException {
         DepositRequestDTO requestDTO = objectMapper.readValue(exchange.getRequestBody(), DepositRequestDTO.class);
-        return depositService.postDeposit(requestDTO);
+        return objectMapper.writeValueAsString(depositService.postDeposit(requestDTO));
     }
 
 }
