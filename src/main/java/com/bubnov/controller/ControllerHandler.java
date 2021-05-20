@@ -1,12 +1,12 @@
 package com.bubnov.controller;
 
+import com.bubnov.exception.RequestException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
@@ -18,6 +18,8 @@ public class ControllerHandler {
     private static final String POST = "POST";
     private static final String GET = "GET";
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     public ControllerHandler(CardsController cardsController, BillsController billsController,
                              DepositController depositController) {
         this.cardsController = cardsController;
@@ -27,7 +29,6 @@ public class ControllerHandler {
 
     public void startController() throws IOException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
         int serverPort = 8000;
         HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
         server.createContext("/clients/cards", (exchange -> {
@@ -43,7 +44,8 @@ public class ControllerHandler {
                     break;
                 case GET:
                     try {
-                        jsonOut = cardsController.getCards(exchange.getRequestBody());
+                        String billNumber = getPath(exchange);
+                        jsonOut = cardsController.getCards(billNumber);
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         catchException(e, exchange);
@@ -60,7 +62,8 @@ public class ControllerHandler {
             switch (exchange.getRequestMethod()) {
                 case GET:
                     try {
-                        jsonOut = billsController.getAmount(exchange.getRequestBody());
+                        String billNumber = getPath(exchange);
+                        jsonOut = billsController.getAmount(billNumber);
                         sendSuccessAnswer(exchange, jsonOut);
                     } catch (Exception e) {
                         catchException(e, exchange);
@@ -94,10 +97,13 @@ public class ControllerHandler {
     }
 
     private void catchException(Exception e, HttpExchange exchange) throws IOException {
-        if (e.getClass() == UnrecognizedPropertyException.class) {
-            sendBadAnswer(exchange, "Некорректное тело запроса");
+        if (e.getClass() == UnrecognizedPropertyException.class ||
+                e.getClass() == ArrayIndexOutOfBoundsException.class) {
+            sendBadAnswer(exchange, "Некорректное тело запроса", 400);
+        } else {
+            sendBadAnswer(exchange, "Ошибка сервера", 500);
         }
-        sendBadAnswer(exchange, e.getMessage());
+
     }
 
     private void sendSuccessAnswer(HttpExchange exchange, String jsonOut) throws IOException {
@@ -109,12 +115,22 @@ public class ControllerHandler {
         exchange.close();
     }
 
-    private void sendBadAnswer(HttpExchange exchange, String jsonOut) throws IOException {
-        exchange.sendResponseHeaders(400, jsonOut.getBytes().length);
+    private void sendBadAnswer(HttpExchange exchange, String jsonOut, int code) throws IOException {
+        exchange.sendResponseHeaders(code, jsonOut.getBytes().length);
         OutputStream output = exchange.getResponseBody();
         output.write(jsonOut.getBytes());
         output.flush();
         exchange.close();
+    }
+
+    private String getPath(HttpExchange exchange) throws IOException, RequestException {
+        String path = exchange.getRequestURI().getPath().split("/")[3];
+        System.out.println(path);
+        if (!path.matches("\\d+")) {
+            sendBadAnswer(exchange, "Некорректно задан счет", 400);
+            throw new RequestException("Некорректно задан счет");
+        }
+        return path;
     }
 
 }

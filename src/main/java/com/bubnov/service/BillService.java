@@ -16,13 +16,12 @@ public class BillService {
         this.billRepository = billRepository;
     }
 
-    public AmountResponseDTO getAmount(BillRequestDTO requestDTO) throws DatabaseException, JsonProcessingException,
+    public AmountResponseDTO getAmount(String request) throws DatabaseException, JsonProcessingException,
             RequestException {
         try {
-            AmountResponseDTO amountResponse = new AmountResponseDTO(billRepository.getBillByNumber(requestDTO.
-                    getBillNumber()));
+            AmountResponseDTO amountResponse = new AmountResponseDTO(billRepository.getBillByNumber(request));
             if (amountResponse.getAmount() == null) {
-                throw new RequestException("Счет : " + requestDTO.getBillNumber() + " не найден");
+                throw new RequestException("Счет : " + request + " не найден");
             }
             return amountResponse;
         } catch (SQLException throwables) {

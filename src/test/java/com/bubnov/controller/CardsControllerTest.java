@@ -54,9 +54,8 @@ class CardsControllerTest {
 
     @Test
     void getCard() throws IOException, DatabaseException, RequestException {
-        BillRequestDTO requestDTO = new BillRequestDTO("11111");
-        InputStream input = new ByteArrayInputStream(objectMapper.writeValueAsBytes(requestDTO));
-        String out = cardsController.getCards(input);
+        String request = "11111";
+        String out = cardsController.getCards(request);
         List<CardResponseDTO> list = new ArrayList<>();
         CardResponseDTO cardResponseDTO1 = new CardResponseDTO("1111222233334444");
         CardResponseDTO cardResponseDTO2 = new CardResponseDTO("1234123412341234");
@@ -68,13 +67,11 @@ class CardsControllerTest {
 
     @Test
     void getCardThrow() throws IOException {
-        BillRequestDTO requestDTOBad = new BillRequestDTO("11112");
-        InputStream input = new ByteArrayInputStream(objectMapper.writeValueAsBytes(requestDTOBad));
+        String requestBad = "11112";
         Throwable throwable = assertThrows(RequestException.class, () -> {
-            cardsController.getCards(input);
+            cardsController.getCards(requestBad);
         });
-        Assertions.assertEquals(throwable.getMessage(), "Не удалось найти карты по счету: " +
-                requestDTOBad.getBillNumber());
+        Assertions.assertEquals(throwable.getMessage(), "Не удалось найти карты по счету: " + requestBad);
     }
 
     @Test

@@ -46,18 +46,18 @@ class BillServiceTest {
 
     @Test
     void getAmount() throws RequestException, DatabaseException, JsonProcessingException {
-        BillRequestDTO requestDTO = new BillRequestDTO("11111");
-        AmountResponseDTO amount = billService.getAmount(requestDTO);
+        String request = "11111";
+        AmountResponseDTO amount = billService.getAmount(request);
         AmountResponseDTO amountExpect = new AmountResponseDTO(BigDecimal.valueOf(50000.05));
         Assertions.assertEquals(amountExpect, amount);
     }
 
     @Test
     void getAmountThrow() {
-        BillRequestDTO requestDTOBad = new BillRequestDTO("11112");
+        String requestBad = "11112";
         Throwable throwable = assertThrows(RequestException.class, () -> {
-            billService.getAmount(requestDTOBad);
+            billService.getAmount(requestBad);
         });
-        Assertions.assertEquals(throwable.getMessage(), "Счет : " + requestDTOBad.getBillNumber() + " не найден");
+        Assertions.assertEquals(throwable.getMessage(), "Счет : " + requestBad + " не найден");
     }
 }

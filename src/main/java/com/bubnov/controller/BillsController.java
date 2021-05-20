@@ -18,9 +18,8 @@ public class BillsController {
         this.billService = billService;
     }
 
-    public String getAmount(InputStream input) throws RequestException, DatabaseException, IOException {
-        BillRequestDTO billNumber = objectMapper.readValue(input, BillRequestDTO.class);
-        return objectMapper.writeValueAsString(billService.getAmount(billNumber));
+    public String getAmount(String input) throws RequestException, DatabaseException, IOException {
+        return objectMapper.writeValueAsString(billService.getAmount(input));
     }
 
 

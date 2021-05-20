@@ -22,16 +22,16 @@ public class CardService {
         this.billRepository = billRepository;
     }
 
-    public List<CardResponseDTO> getCardsByBillNumber(BillRequestDTO billNumber)
+    public List<CardResponseDTO> getCardsByBillNumber(String billNumber)
             throws  RequestException, DatabaseException {
         List<CardResponseDTO> cards;
         try {
-            cards = cardRepository.getAllCardsByBillNumber(billNumber.getBillNumber());
+            cards = cardRepository.getAllCardsByBillNumber(billNumber);
         } catch (SQLException throwables) {
             throw new DatabaseException("Ошибка базы данных");
         }
         if (cards.size() == 0) {
-            throw new RequestException("Не удалось найти карты по счету: " + billNumber.getBillNumber());
+            throw new RequestException("Не удалось найти карты по счету: " + billNumber);
         }
         return cards;
     }

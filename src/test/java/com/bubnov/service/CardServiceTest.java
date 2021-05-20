@@ -51,8 +51,8 @@ class CardServiceTest {
 
     @Test
     void getCardsByBillNumber() throws RequestException, DatabaseException, JsonProcessingException {
-        BillRequestDTO requestDTO = new BillRequestDTO("11111");
-        List<CardResponseDTO> cardsByBillNumber = cardService.getCardsByBillNumber(requestDTO);
+        String request = "11111";
+        List<CardResponseDTO> cardsByBillNumber = cardService.getCardsByBillNumber(request);
         List<CardResponseDTO> cards = new ArrayList<>();
         CardResponseDTO card = new CardResponseDTO("1111222233334444");
         CardResponseDTO card2 = new CardResponseDTO("1234123412341234");
@@ -63,12 +63,12 @@ class CardServiceTest {
 
     @Test
     void getCardsThrow() {
-        BillRequestDTO requestDTOBad = new BillRequestDTO("11112");
+        String requestBad = "11112";
         Throwable throwable = assertThrows(RequestException.class, () -> {
-            cardService.getCardsByBillNumber(requestDTOBad);
+            cardService.getCardsByBillNumber(requestBad);
         });
         Assertions.assertEquals(throwable.getMessage(), "Не удалось найти карты по счету: " +
-                requestDTOBad.getBillNumber());
+                requestBad);
     }
 
     @Test

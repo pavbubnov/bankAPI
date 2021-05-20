@@ -25,9 +25,8 @@ public class CardsController {
         return objectMapper.writeValueAsString(cardService.createCard(requestDTO));
     }
 
-    public String getCards (InputStream input) throws RequestException, DatabaseException, IOException {
-        BillRequestDTO billNumber = objectMapper.readValue(input, BillRequestDTO.class);
-        return objectMapper.writeValueAsString(cardService.getCardsByBillNumber(billNumber));
+    public String getCards (String input) throws RequestException, DatabaseException, IOException { ;
+        return objectMapper.writeValueAsString(cardService.getCardsByBillNumber(input));
     }
 
 
