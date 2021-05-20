@@ -1,3 +1,0 @@
-2021-05-18 15:30:31 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Нет данных
-No data is available [2000-190]

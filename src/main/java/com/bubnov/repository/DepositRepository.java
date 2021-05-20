@@ -19,10 +19,6 @@ public class DepositRepository {
     private DepositRepository() {
     }
 
-    public DepositRepository(String databasePath) {
-        this.databasePath = databasePath;
-    }
-
     public void setDatabasePath(String databasePath) {
         this.databasePath = databasePath;
     }

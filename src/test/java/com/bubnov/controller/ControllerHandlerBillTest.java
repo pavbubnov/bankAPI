@@ -1,8 +1,7 @@
 package com.bubnov.controller;
 
 import com.bubnov.controller.dto.bill.AmountResponseDTO;
-import com.bubnov.controller.dto.card.CardRequestDTO;
-import com.bubnov.controller.dto.card.CardResponseDTO;
+import com.bubnov.controller.controllerhandler.ControllerHandler;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.repository.BillRepository;
 import com.bubnov.repository.CardRepository;
@@ -26,8 +25,6 @@ import java.net.InetSocketAddress;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 class ControllerHandlerBillTest {
 

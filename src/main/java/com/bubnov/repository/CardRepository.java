@@ -22,10 +22,6 @@ public class CardRepository {
     private CardRepository() {
     }
 
-    public CardRepository(String databasePath) {
-        this.databasePath = databasePath;
-    }
-
     public void setDatabasePath(String databasePath) {
         this.databasePath = databasePath;
     }

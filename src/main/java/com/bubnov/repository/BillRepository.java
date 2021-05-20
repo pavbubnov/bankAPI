@@ -23,10 +23,6 @@ public class BillRepository {
     private BillRepository() {
     }
 
-    private BillRepository(String databasePath) {
-        this.databasePath = databasePath;
-    }
-
     public void setDatabasePath(String databasePath) {
         this.databasePath = databasePath;
     }

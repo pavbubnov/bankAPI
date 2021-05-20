@@ -2,7 +2,7 @@ package com.bubnov;
 
 import com.bubnov.controller.BillsController;
 import com.bubnov.controller.CardsController;
-import com.bubnov.controller.ControllerHandler;
+import com.bubnov.controller.controllerhandler.ControllerHandler;
 import com.bubnov.controller.DepositController;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.repository.BillRepository;
