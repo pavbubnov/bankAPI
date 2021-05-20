@@ -6,7 +6,6 @@ import com.bubnov.service.BillService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 public class BillsController {
 
@@ -20,6 +19,4 @@ public class BillsController {
     public String getAmount(String input) throws RequestException, DatabaseException, IOException {
         return objectMapper.writeValueAsString(billService.getAmount(input));
     }
-
-
 }

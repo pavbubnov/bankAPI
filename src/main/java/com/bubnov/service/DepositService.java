@@ -22,7 +22,7 @@ public class DepositService {
         this.billRepository = billRepository;
     }
 
-    public DepositResponseDTO postDeposit (DepositRequestDTO requestDTO) throws DatabaseException, JsonProcessingException,
+    public DepositResponseDTO postDeposit(DepositRequestDTO requestDTO) throws DatabaseException, JsonProcessingException,
             RequestException {
         DepositResponseDTO response = new DepositResponseDTO();
         response.setBillNumber(requestDTO.getBillNumber());

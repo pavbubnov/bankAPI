@@ -195,6 +195,4 @@ class ControllerHandlerCardTest {
         rd.close();
         return response.toString();
     }
-
-
 }

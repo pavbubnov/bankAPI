@@ -6,7 +6,6 @@ import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.repository.BillRepository;
 import com.bubnov.repository.CardRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,7 +21,7 @@ public class CardService {
     }
 
     public List<CardResponseDTO> getCardsByBillNumber(String billNumber)
-            throws  RequestException, DatabaseException {
+            throws RequestException, DatabaseException {
         List<CardResponseDTO> cards;
         try {
             cards = cardRepository.getAllCardsByBillNumber(billNumber);

@@ -1,8 +1,8 @@
 package com.bubnov.repository;
 
 import com.bubnov.controller.dto.bill.BillResponseDTO;
-import com.bubnov.controller.dto.card.CardRequestDTO;
 import com.bubnov.exception.DatabaseException;
+
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
