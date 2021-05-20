@@ -99,9 +99,11 @@ public class ControllerHandler {
     private void catchException(Exception e, HttpExchange exchange) throws IOException {
         if (e.getClass() == UnrecognizedPropertyException.class ||
                 e.getClass() == ArrayIndexOutOfBoundsException.class) {
-            sendBadAnswer(exchange, "Некорректное тело запроса", 400);
+            sendBadAnswer(exchange, "Некорректный запрос", 400);
+        } else if (e.getClass() == RequestException.class) {
+            sendBadAnswer(exchange, e.getMessage(), 400);
         } else {
-            sendBadAnswer(exchange, "Ошибка сервера", 500);
+            sendBadAnswer(exchange, "Ошибка сервера, проверьте тело запроса", 500);
         }
 
     }
