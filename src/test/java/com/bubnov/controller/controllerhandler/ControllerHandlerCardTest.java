@@ -1,5 +1,8 @@
-package com.bubnov.controller;
+package com.bubnov.controller.controllerhandler;
 
+import com.bubnov.controller.BillsController;
+import com.bubnov.controller.CardsController;
+import com.bubnov.controller.DepositController;
 import com.bubnov.controller.dto.card.CardRequestDTO;
 import com.bubnov.controller.dto.card.CardResponseDTO;
 import com.bubnov.controller.controllerhandler.ControllerHandler;

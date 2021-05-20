@@ -1,9 +1,6 @@
 package com.bubnov.controller.controllerhandler;
 
-import com.bubnov.controller.BillsController;
-import com.bubnov.controller.CardsController;
-import com.bubnov.controller.CounterpartyController;
-import com.bubnov.controller.DepositController;
+import com.bubnov.controller.*;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -14,13 +11,16 @@ public class ControllerHandler {
     private BillsController billsController;
     private DepositController depositController;
     private CounterpartyController counterpartyController;
+    private TransferController transferController;
 
     public ControllerHandler(CardsController cardsController, BillsController billsController,
-                             DepositController depositController, CounterpartyController counterpartyController) {
+                             DepositController depositController, CounterpartyController counterpartyController,
+                             TransferController transferController) {
         this.cardsController = cardsController;
         this.billsController = billsController;
         this.depositController = depositController;
         this.counterpartyController = counterpartyController;
+        this.transferController = transferController;
     }
 
     public ControllerHandler(CardsController cardsController, BillsController billsController, DepositController depositController) {
@@ -42,6 +42,9 @@ public class ControllerHandler {
 
         CounterPartyHandler counterPartyHandler = new CounterPartyHandler();
         counterPartyHandler.handle(server, counterpartyController);
+
+        TransferHandler transferHandler = new TransferHandler();
+        transferHandler.handle(server, transferController);
 
         server.setExecutor(null);
         server.start();

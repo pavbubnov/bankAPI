@@ -1,16 +1,10 @@
 package com.bubnov;
 
-import com.bubnov.controller.BillsController;
-import com.bubnov.controller.CardsController;
-import com.bubnov.controller.CounterpartyController;
+import com.bubnov.controller.*;
 import com.bubnov.controller.controllerhandler.ControllerHandler;
-import com.bubnov.controller.DepositController;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.repository.*;
-import com.bubnov.service.BillService;
-import com.bubnov.service.CardService;
-import com.bubnov.service.CounterpartyService;
-import com.bubnov.service.DepositService;
+import com.bubnov.service.*;
 import com.sun.net.httpserver.HttpServer;
 import org.h2.tools.RunScript;
 import java.io.FileInputStream;
@@ -47,6 +41,8 @@ public class Application {
         depositRepository.setDatabasePath(databasePath);
         CounterpartyRepository counterpartyRepository = CounterpartyRepository.getInstance();
         counterpartyRepository.setDatabasePath(databasePath);
+        TransferRepository transferRepository = TransferRepository.getInstance();
+        transferRepository.setDatabasePath(databasePath);
         H2Datasource datasource = new H2Datasource();
         try {
             new FileReader(databaseFile);
@@ -64,12 +60,15 @@ public class Application {
         BillService billService = new BillService(billRepository);
         DepositService depositService = new DepositService(depositRepository, billRepository);
         CounterpartyService counterpartyService = new CounterpartyService(counterpartyRepository, accountRepository);
+        TransferService transferService = new TransferService(transferRepository, billRepository, counterpartyRepository);
         CardsController cardsController = new CardsController(cardService);
         BillsController billsController = new BillsController(billService);
         DepositController depositController = new DepositController(depositService);
         CounterpartyController counterpartyController = new CounterpartyController(counterpartyService);
+        TransferController transferController = new TransferController(transferService);
+
         ControllerHandler controllerHandler = new ControllerHandler(cardsController, billsController,
-                depositController, counterpartyController);
+                depositController, counterpartyController, transferController);
         try {
             int serverPort = 8000;
             HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);

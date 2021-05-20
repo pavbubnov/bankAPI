@@ -1,5 +1,8 @@
-package com.bubnov.controller;
+package com.bubnov.controller.controllerhandler;
 
+import com.bubnov.controller.BillsController;
+import com.bubnov.controller.CardsController;
+import com.bubnov.controller.DepositController;
 import com.bubnov.controller.dto.deposit.DepositRequestDTO;
 import com.bubnov.controller.dto.deposit.DepositResponseDTO;
 import com.bubnov.controller.controllerhandler.ControllerHandler;
@@ -192,6 +195,4 @@ class ControllerHandlerDepositTest {
             return deposits;
         }
     }
-
-
 }
