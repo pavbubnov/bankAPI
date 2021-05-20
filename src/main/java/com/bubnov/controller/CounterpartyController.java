@@ -25,4 +25,8 @@ public class CounterpartyController {
         CounterpartyDTO requestDTO = objectMapper.readValue(input, CounterpartyDTO.class);
         return objectMapper.writeValueAsString(counterpartyService.postCounterparty(requestDTO));
     }
+
+    public String getCounterparties(int input) throws RequestException, DatabaseException, IOException, SQLException {
+        return objectMapper.writeValueAsString(counterpartyService.getCounterparties(input));
+    }
 }

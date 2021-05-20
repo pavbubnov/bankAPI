@@ -42,8 +42,8 @@ public class ControllerUtils {
     String getPath(HttpExchange exchange) throws IOException, RequestException {
         String path = exchange.getRequestURI().getPath().split("/")[3];
         if (!path.matches("\\d+")) {
-            sendBadAnswer(exchange, "Некорректно задан счет", 400);
-            throw new RequestException("Некорректно задан счет");
+            sendBadAnswer(exchange, "Некорректно задан номер", 400);
+            throw new RequestException("Некорректно задан номер");
         }
         return path;
     }

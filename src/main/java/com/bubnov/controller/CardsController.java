@@ -25,7 +25,6 @@ public class CardsController {
     }
 
     public String getCards(String input) throws RequestException, DatabaseException, IOException {
-        ;
         return objectMapper.writeValueAsString(cardService.getCardsByBillNumber(input));
     }
 

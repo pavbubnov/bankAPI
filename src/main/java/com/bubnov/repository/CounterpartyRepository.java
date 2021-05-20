@@ -1,28 +1,28 @@
 package com.bubnov.repository;
 
-import com.bubnov.controller.dto.card.CardRequestDTO;
-import com.bubnov.controller.dto.card.CardResponseDTO;
 import com.bubnov.controller.dto.counterparty.CounterpartyDTO;
+import com.bubnov.entity.Account;
 import com.bubnov.exception.DatabaseException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CounterpartyRepository {
 
     private static CounterpartyRepository INSTANCE;
     private static final String INSERT_COUNTERPARTY =
             "INSERT INTO COUNTERPARTY(EMPLOYER_ID, COUNTERPARTY_ID) VALUES (?, ?)";
-    private static final String SELECT_COUNTERPARTY =
-            "SELECT COUNTERPARTY_ID FROM COUNTERPARTY WHERE EMPLOYER_ID = ?";
     private static final String CHECK_SELECT =
-            "SELECT COUNT(*) FROM COUNTERPARTY WHERE EMPLOYER_ID = ? AND COUNTERPARTY = ?";
+            "SELECT COUNT(*) FROM COUNTERPARTY WHERE EMPLOYER_ID = ? AND COUNTERPARTY_ID = ?";
+    private static final String SELECT_COUNTERPARTIES =
+            "SELECT COUNTERPARTY_ID FROM COUNTERPARTY WHERE EMPLOYER_ID = ?";
 
     private String databasePath;
     H2Datasource datasource = new H2Datasource();
-
     private CounterpartyRepository() {
     }
 
@@ -61,6 +61,22 @@ public class CounterpartyRepository {
                 }
             }
             return false;
+        }
+    }
+
+    public List<Integer> getCounterparties(int employer_id) throws DatabaseException, SQLException {
+        try (Connection db = datasource.setH2Connection(databasePath);
+             PreparedStatement preparedStatement = db.prepareStatement(SELECT_COUNTERPARTIES);
+        ) {
+            preparedStatement.setInt(1, employer_id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Integer> counterparties = new ArrayList<>();
+            while (resultSet.next()){
+                int counterparty = resultSet.getInt(1);
+                counterparties.add(counterparty);
+            }
+            return counterparties;
         }
     }
 

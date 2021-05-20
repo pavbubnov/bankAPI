@@ -102,7 +102,7 @@ class ControllerHandlerCardTest {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         Assertions.assertEquals(connection.getResponseCode(), 400);
-        Assertions.assertEquals(errorMessage(connection), "Некорректно задан счет");
+        Assertions.assertEquals(errorMessage(connection), "Некорректно задан номер");
     }
 
     @Test

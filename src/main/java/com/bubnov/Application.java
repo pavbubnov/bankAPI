@@ -2,15 +2,14 @@ package com.bubnov;
 
 import com.bubnov.controller.BillsController;
 import com.bubnov.controller.CardsController;
+import com.bubnov.controller.CounterpartyController;
 import com.bubnov.controller.controllerhandler.ControllerHandler;
 import com.bubnov.controller.DepositController;
 import com.bubnov.exception.DatabaseException;
-import com.bubnov.repository.BillRepository;
-import com.bubnov.repository.CardRepository;
-import com.bubnov.repository.DepositRepository;
-import com.bubnov.repository.H2Datasource;
+import com.bubnov.repository.*;
 import com.bubnov.service.BillService;
 import com.bubnov.service.CardService;
+import com.bubnov.service.CounterpartyService;
 import com.bubnov.service.DepositService;
 import com.sun.net.httpserver.HttpServer;
 import org.h2.tools.RunScript;
@@ -38,12 +37,16 @@ public class Application {
         String databaseFile = property.getProperty("database.file");
         String databaseScript = property.getProperty("database.script");
         String databasePath = property.getProperty("database.path");
+        AccountRepository accountRepository = AccountRepository.getInstance();
+        accountRepository.setDatabasePath(databasePath);
         CardRepository cardRepository = CardRepository.getInstance();
         cardRepository.setDatabasePath(databasePath);
         BillRepository billRepository = BillRepository.getInstance();
         billRepository.setDatabasePath(databasePath);
         DepositRepository depositRepository = DepositRepository.getInstance();
         depositRepository.setDatabasePath(databasePath);
+        CounterpartyRepository counterpartyRepository = CounterpartyRepository.getInstance();
+        counterpartyRepository.setDatabasePath(databasePath);
         H2Datasource datasource = new H2Datasource();
         try {
             new FileReader(databaseFile);
@@ -60,10 +63,13 @@ public class Application {
         CardService cardService = new CardService(cardRepository, billRepository);
         BillService billService = new BillService(billRepository);
         DepositService depositService = new DepositService(depositRepository, billRepository);
+        CounterpartyService counterpartyService = new CounterpartyService(counterpartyRepository, accountRepository);
         CardsController cardsController = new CardsController(cardService);
         BillsController billsController = new BillsController(billService);
         DepositController depositController = new DepositController(depositService);
-        ControllerHandler controllerHandler = new ControllerHandler(cardsController, billsController, depositController);
+        CounterpartyController counterpartyController = new CounterpartyController(counterpartyService);
+        ControllerHandler controllerHandler = new ControllerHandler(cardsController, billsController,
+                depositController, counterpartyController);
         try {
             int serverPort = 8000;
             HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
