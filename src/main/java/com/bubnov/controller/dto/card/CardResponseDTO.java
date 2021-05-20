@@ -37,4 +37,11 @@ public class CardResponseDTO {
     public int hashCode() {
         return Objects.hash(cardNumber);
     }
+
+    @Override
+    public String toString() {
+        return "CardResponseDTO{" +
+                "cardNumber='" + cardNumber + '\'' +
+                '}';
+    }
 }

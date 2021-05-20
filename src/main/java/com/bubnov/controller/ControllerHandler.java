@@ -1,14 +1,12 @@
 package com.bubnov.controller;
 
 import com.bubnov.exception.RequestException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 
 public class ControllerHandler {
 
@@ -18,8 +16,6 @@ public class ControllerHandler {
     private static final String POST = "POST";
     private static final String GET = "GET";
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     public ControllerHandler(CardsController cardsController, BillsController billsController,
                              DepositController depositController) {
         this.cardsController = cardsController;
@@ -27,10 +23,8 @@ public class ControllerHandler {
         this.depositController = depositController;
     }
 
-    public void startController() throws IOException {
+    public void startController(HttpServer server) throws IOException {
 
-        int serverPort = 8000;
-        HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
         server.createContext("/clients/cards", (exchange -> {
             String jsonOut;
             switch (exchange.getRequestMethod()) {
@@ -109,7 +103,7 @@ public class ControllerHandler {
     }
 
     private void sendSuccessAnswer(HttpExchange exchange, String jsonOut) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.getResponseHeaders().set("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(200, jsonOut.getBytes().length);
         OutputStream output = exchange.getResponseBody();
         output.write(jsonOut.getBytes());
@@ -118,6 +112,7 @@ public class ControllerHandler {
     }
 
     private void sendBadAnswer(HttpExchange exchange, String jsonOut, int code) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "application/text");
         exchange.sendResponseHeaders(code, jsonOut.getBytes().length);
         OutputStream output = exchange.getResponseBody();
         output.write(jsonOut.getBytes());
@@ -127,7 +122,6 @@ public class ControllerHandler {
 
     private String getPath(HttpExchange exchange) throws IOException, RequestException {
         String path = exchange.getRequestURI().getPath().split("/")[3];
-        System.out.println(path);
         if (!path.matches("\\d+")) {
             sendBadAnswer(exchange, "Некорректно задан счет", 400);
             throw new RequestException("Некорректно задан счет");

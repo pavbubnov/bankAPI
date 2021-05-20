@@ -1,6 +1,5 @@
 package com.bubnov.controller;
 
-import com.bubnov.controller.dto.bill.BillRequestDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.service.BillService;

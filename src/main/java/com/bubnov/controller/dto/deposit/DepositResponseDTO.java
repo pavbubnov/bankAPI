@@ -61,4 +61,13 @@ public class DepositResponseDTO {
     public int hashCode() {
         return Objects.hash(billNumber, amountDeposit, amountAfter);
     }
+
+    @Override
+    public String toString() {
+        return "DepositResponseDTO{" +
+                "billNumber='" + billNumber + '\'' +
+                ", amountDeposit=" + amountDeposit +
+                ", amountAfter=" + amountAfter +
+                '}';
+    }
 }

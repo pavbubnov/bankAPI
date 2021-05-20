@@ -12,11 +12,13 @@ import com.bubnov.repository.H2Datasource;
 import com.bubnov.service.BillService;
 import com.bubnov.service.CardService;
 import com.bubnov.service.DepositService;
+import com.sun.net.httpserver.HttpServer;
 import org.h2.tools.RunScript;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -63,7 +65,9 @@ public class Application {
         DepositController depositController = new DepositController(depositService);
         ControllerHandler controllerHandler = new ControllerHandler(cardsController, billsController, depositController);
         try {
-            controllerHandler.startController();
+            int serverPort = 8000;
+            HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
+            controllerHandler.startController(server);
         } catch (IOException e) {
             e.printStackTrace();
         }

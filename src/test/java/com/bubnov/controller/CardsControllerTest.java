@@ -1,6 +1,5 @@
 package com.bubnov.controller;
 
-import com.bubnov.controller.dto.bill.BillRequestDTO;
 import com.bubnov.controller.dto.card.CardRequestDTO;
 import com.bubnov.controller.dto.card.CardResponseDTO;
 import com.bubnov.exception.DatabaseException;
