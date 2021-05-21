@@ -21,13 +21,13 @@ public class CounterpartyRepository {
     private static final String SELECT_COUNTERPARTIES =
             "SELECT COUNTERPARTY_ID FROM COUNTERPARTY WHERE EMPLOYER_ID = ?";
 
-    private String databasePath;
-    H2Datasource datasource = new H2Datasource();
+    private H2Datasource h2Datasource;
+
     private CounterpartyRepository() {
     }
 
-    public void setDatabasePath(String databasePath) {
-        this.databasePath = databasePath;
+    public void setH2Datasource(H2Datasource h2Datasource) {
+        this.h2Datasource = h2Datasource;
     }
 
     public static CounterpartyRepository getInstance() {
@@ -38,7 +38,7 @@ public class CounterpartyRepository {
     }
 
     public CounterpartyDTO createCounterparty(CounterpartyDTO counterpartyDTO) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(INSERT_COUNTERPARTY);
         ) {
             preparedStatement.setInt(1, counterpartyDTO.getEmployer_id());
@@ -49,7 +49,7 @@ public class CounterpartyRepository {
     }
 
     public boolean checkThatCounterParty(int employer_id, int counterparty_id) throws DatabaseException, SQLException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(CHECK_SELECT);
         ) {
             preparedStatement.setInt(1, employer_id);
@@ -65,14 +65,14 @@ public class CounterpartyRepository {
     }
 
     public List<Integer> getCounterparties(int employer_id) throws DatabaseException, SQLException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(SELECT_COUNTERPARTIES);
         ) {
             preparedStatement.setInt(1, employer_id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> counterparties = new ArrayList<>();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 int counterparty = resultSet.getInt(1);
                 counterparties.add(counterparty);
             }

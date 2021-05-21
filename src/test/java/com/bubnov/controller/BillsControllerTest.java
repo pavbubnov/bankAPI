@@ -24,26 +24,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class BillsControllerTest {
 
     BillRepository billRepository = BillRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
     String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
     String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
     String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    H2Datasource datasource = new H2Datasource(databasePath);
     BillService billService;
     BillsController billsController;
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() throws DatabaseException, FileNotFoundException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScript));
-        billRepository.setDatabasePath(databasePath);
+        billRepository.setH2Datasource(datasource);
         billService = new BillService(billRepository);
         billsController = new BillsController(billService);
     }
 
     @AfterEach
     void tearDown() throws DatabaseException, FileNotFoundException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
     }
 

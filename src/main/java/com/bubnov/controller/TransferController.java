@@ -14,7 +14,7 @@ public class TransferController {
 
     private TransferService transferService;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public TransferController(TransferService transferService) {
         this.transferService = transferService;

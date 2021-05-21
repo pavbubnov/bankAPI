@@ -1,5 +1,6 @@
 package com.bubnov.repository;
 
+import com.bubnov.controller.dto.account.AccountDTO;
 import com.bubnov.entity.Account;
 import com.bubnov.exception.DatabaseException;
 
@@ -7,16 +8,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AccountRepository {
 
     private static AccountRepository INSTANCE;
-    private String databasePath;
-    H2Datasource datasource = new H2Datasource();
+    private H2Datasource h2Datasource;
     private static final String SELECT_ACCOUNT =
             "SELECT * FROM ACCOUNTS WHERE ID = ?";
+    private static final String INSERT_ACCOUNT =
+            "INSERT INTO ACCOUNTS (NAME) VALUES (?)";
+    ;
 
     public static AccountRepository getInstance() {
         if (INSTANCE == null) {
@@ -25,12 +26,12 @@ public class AccountRepository {
         return INSTANCE;
     }
 
-    public void setDatabasePath(String databasePath) {
-        this.databasePath = databasePath;
+    public void setH2Datasource(H2Datasource h2Datasource) {
+        this.h2Datasource = h2Datasource;
     }
 
     public Account getAccountById(int id) throws DatabaseException, SQLException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(SELECT_ACCOUNT);
         ) {
             preparedStatement.setInt(1, id);
@@ -38,6 +39,16 @@ public class AccountRepository {
             resultSet.next();
             Account test = new Account(resultSet.getInt(1), resultSet.getString(2));
             return new Account(resultSet.getInt(1), resultSet.getString(2));
+        }
+    }
+
+    public AccountDTO postAccount(AccountDTO account) throws DatabaseException, SQLException {
+        try (Connection db = h2Datasource.setH2Connection();
+             PreparedStatement preparedStatement = db.prepareStatement(INSERT_ACCOUNT);
+        ) {
+            preparedStatement.setString(1, account.getName());
+            preparedStatement.execute();
+            return account;
         }
     }
 }

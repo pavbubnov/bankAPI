@@ -10,7 +10,7 @@ import java.io.IOException;
 public class BillsController {
 
     private final BillService billService;
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public BillsController(BillService billService) {
         this.billService = billService;

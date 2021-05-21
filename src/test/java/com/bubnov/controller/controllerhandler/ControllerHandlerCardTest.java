@@ -30,10 +30,10 @@ class ControllerHandlerCardTest {
     BillRepository billRepository = BillRepository.getInstance();
     CardRepository cardRepository = CardRepository.getInstance();
     DepositRepository depositRepository = DepositRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
     String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
     String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
     String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    H2Datasource datasource = new H2Datasource(databasePath);
     BillService billService;
     DepositService depositService;
     CardService cardService;
@@ -47,11 +47,11 @@ class ControllerHandlerCardTest {
 
     @BeforeEach
     void setUp() throws DatabaseException, IOException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScript));
-        cardRepository.setDatabasePath(databasePath);
-        billRepository.setDatabasePath(databasePath);
-        depositRepository.setDatabasePath(databasePath);
+        cardRepository.setH2Datasource(datasource);
+        billRepository.setH2Datasource(datasource);
+        depositRepository.setH2Datasource(datasource);
         cardService = new CardService(cardRepository, billRepository);
         billService = new BillService(billRepository);
         depositService = new DepositService(depositRepository, billRepository);
@@ -65,7 +65,7 @@ class ControllerHandlerCardTest {
 
     @AfterEach
     void tearDown() throws DatabaseException, FileNotFoundException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
         server.stop(0);
     }

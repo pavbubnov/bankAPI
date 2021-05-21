@@ -17,14 +17,13 @@ public class BillRepository {
     private static final String ARE_BILLS_EXISTS = "SELECT COUNT(1) FROM BILLS WHERE BILL_NUMBER = ?";
     private static final String COLUMN_AMOUNT = "AMOUNT";
     private static final String COLUMN_ACCOUNT_ID = "ACCOUNT_ID";
-    private String databasePath;
-    H2Datasource datasource = new H2Datasource();
+    private H2Datasource h2Datasource;
 
     private BillRepository() {
     }
 
-    public void setDatabasePath(String databasePath) {
-        this.databasePath = databasePath;
+    public void setH2Datasource(H2Datasource h2Datasource) {
+        this.h2Datasource = h2Datasource;
     }
 
     public static BillRepository getInstance() {
@@ -35,7 +34,7 @@ public class BillRepository {
     }
 
     public BillResponseDTO getBillByNumber(String billNumber) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(SELECT_BILLS_BY_BILL_NUMBER);
         ) {
             preparedStatement.setString(1, billNumber);
@@ -50,7 +49,7 @@ public class BillRepository {
     }
 
     public boolean checkBillExists(String cardNumber) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(ARE_BILLS_EXISTS);
         ) {
             preparedStatement.setString(1, cardNumber);
@@ -65,7 +64,7 @@ public class BillRepository {
     }
 
     public void changeAmount(String billNumber, BigDecimal amount) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(UPDATE_BILLS_BY_BILL_NUMBER);
         ) {
             preparedStatement.setBigDecimal(1, amount);

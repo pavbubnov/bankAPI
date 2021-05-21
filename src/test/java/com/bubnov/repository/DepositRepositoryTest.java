@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 class DepositRepositoryTest {
 
     DepositRepository depositRepository = DepositRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
     String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
     String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
     String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    H2Datasource datasource = new H2Datasource(databasePath);
     private static final String SELECT_DEPOSITS_BY_BILL = "SELECT * FROM DEPOSITS WHERE BILL_NUMBER = ?";
     private static final String COLUMN_ID = "ID";
     private static final String COLUMN_BILL_NUMBER = "BILL_NUMBER";
@@ -33,14 +33,14 @@ class DepositRepositoryTest {
 
     @BeforeEach
     void setUp() throws DatabaseException, SQLException, FileNotFoundException {
-        Connection db = datasource.setH2Connection(databasePath);
-        depositRepository.setDatabasePath(databasePath);
+        Connection db = datasource.setH2Connection();
+        depositRepository.setH2Datasource(datasource);
         RunScript.execute(db, new FileReader(databaseScript));
     }
 
     @AfterEach
     void tearDown() throws DatabaseException, SQLException, FileNotFoundException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
     }
 
@@ -63,7 +63,7 @@ class DepositRepositoryTest {
     }
 
     private List<Deposit> getDeposit(String billNumber) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(SELECT_DEPOSITS_BY_BILL);
         ) {
             preparedStatement.setString(1, billNumber);

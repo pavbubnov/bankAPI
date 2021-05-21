@@ -14,16 +14,15 @@ public class CardRepository {
     private static final String IS_CARD_EXIST = "SELECT COUNT(1) FROM CARDS WHERE CARD_NUMBER = ?";
     private static final String INSERT_CARD = "INSERT INTO CARDS(CARD_NUMBER, BILL_NUMBER) VALUES (?, ?);";
     private static final String COLUMN_CARD_NUMBER = "CARD_NUMBER";
-    private String databasePath;
+    private H2Datasource h2Datasource;
 
     private static CardRepository INSTANCE;
-    H2Datasource datasource = new H2Datasource();
 
     private CardRepository() {
     }
 
-    public void setDatabasePath(String databasePath) {
-        this.databasePath = databasePath;
+    public void setH2Datasource(H2Datasource h2Datasource) {
+        this.h2Datasource = h2Datasource;
     }
 
     public static CardRepository getInstance() {
@@ -35,7 +34,7 @@ public class CardRepository {
 
     public List<CardResponseDTO> getAllCardsByBillNumber(String billNumber) throws SQLException, DatabaseException {
         List<CardResponseDTO> cards = new ArrayList<>();
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(SELECT_CARDS_BY_BILL_NUMBER);
         ) {
             preparedStatement.setString(1, billNumber);
@@ -49,7 +48,7 @@ public class CardRepository {
     }
 
     public CardResponseDTO createCard(CardRequestDTO card) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(INSERT_CARD);
         ) {
             preparedStatement.setString(1, card.getCardNumber());
@@ -60,7 +59,7 @@ public class CardRepository {
     }
 
     public boolean checkCardExists(String cardNumber) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(IS_CARD_EXIST);
         ) {
             preparedStatement.setString(1, cardNumber);

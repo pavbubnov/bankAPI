@@ -12,15 +12,20 @@ public class ControllerHandler {
     private DepositController depositController;
     private CounterpartyController counterpartyController;
     private TransferController transferController;
+    private ConfirmationController confirmationController;
+    private AccountController accountController;
 
     public ControllerHandler(CardsController cardsController, BillsController billsController,
                              DepositController depositController, CounterpartyController counterpartyController,
-                             TransferController transferController) {
+                             TransferController transferController, ConfirmationController confirmationController,
+                             AccountController accountController) {
         this.cardsController = cardsController;
         this.billsController = billsController;
         this.depositController = depositController;
         this.counterpartyController = counterpartyController;
         this.transferController = transferController;
+        this.confirmationController = confirmationController;
+        this.accountController = accountController;
     }
 
     public ControllerHandler(CardsController cardsController, BillsController billsController, DepositController depositController) {
@@ -45,6 +50,12 @@ public class ControllerHandler {
 
         TransferHandler transferHandler = new TransferHandler();
         transferHandler.handle(server, transferController);
+
+        ConfirmationHandler confirmationHandler = new ConfirmationHandler();
+        confirmationHandler.handle(server, confirmationController);
+
+        AccountHandler accountHandler = new AccountHandler();
+        accountHandler.handle(server, accountController);
 
         server.setExecutor(null);
         server.start();

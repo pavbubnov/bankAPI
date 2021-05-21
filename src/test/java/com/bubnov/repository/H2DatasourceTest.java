@@ -25,8 +25,8 @@ class H2DatasourceTest {
         }
 
         String databasePath = property.getProperty("database.path");
-        H2Datasource h2Datasource = new H2Datasource();
-        try (Connection connection = h2Datasource.setH2Connection(databasePath)) {
+        H2Datasource h2Datasource = new H2Datasource(databasePath);
+        try (Connection connection = h2Datasource.setH2Connection()) {
             assertTrue(connection.isValid(1));
             assertFalse(connection.isClosed());
         }

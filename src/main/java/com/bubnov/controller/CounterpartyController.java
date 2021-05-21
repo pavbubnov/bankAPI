@@ -14,7 +14,7 @@ public class CounterpartyController {
 
     private CounterpartyService counterpartyService;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public CounterpartyController(CounterpartyService counterpartyService) {
         this.counterpartyService = counterpartyService;

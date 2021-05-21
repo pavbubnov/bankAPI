@@ -15,14 +15,13 @@ public class TransferRepository {
             "VALUES (?, ?, ?)";
     private static final String UPDATE_BILL = "UPDATE BILLS SET AMOUNT = ? WHERE BILL_NUMBER = ?";
 
-    private String databasePath;
-    H2Datasource datasource = new H2Datasource();
+    private H2Datasource h2Datasource;
 
-    private TransferRepository() {
+    public void setH2Datasource(H2Datasource h2Datasource) {
+        this.h2Datasource = h2Datasource;
     }
 
-    public void setDatabasePath(String databasePath) {
-        this.databasePath = databasePath;
+    private TransferRepository() {
     }
 
     public static TransferRepository getInstance() {
@@ -33,7 +32,7 @@ public class TransferRepository {
     }
 
     public TransferDTO createTransfer(TransferDTO request) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(INSERT_TRANSFER);
         ) {
             preparedStatement.setString(1, request.getSenderBillNumber());
@@ -46,7 +45,7 @@ public class TransferRepository {
 
     public void doTransactionalTransfer(TransferDTO request, BigDecimal senderNewAmount,
                                         BigDecimal recipientNewAmount) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement paymentStatement = db.prepareStatement(UPDATE_BILL);
              PreparedStatement depositStatement = db.prepareStatement(UPDATE_BILL);
         ) {

@@ -25,24 +25,24 @@ class DepositServiceTest {
 
     BillRepository billRepository = BillRepository.getInstance();
     DepositRepository depositRepository = DepositRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
     String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
     String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
     String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    H2Datasource datasource = new H2Datasource(databasePath);
     DepositService depositService;
 
     @BeforeEach
     void setUp() throws DatabaseException, SQLException, FileNotFoundException {
-        Connection db = datasource.setH2Connection(databasePath);
-        depositRepository.setDatabasePath(databasePath);
-        billRepository.setDatabasePath(databasePath);
+        Connection db = datasource.setH2Connection();
+        depositRepository.setH2Datasource(datasource);
+        billRepository.setH2Datasource(datasource);
         depositService = new DepositService(depositRepository, billRepository);
         RunScript.execute(db, new FileReader(databaseScript));
     }
 
     @AfterEach
     void tearDown() throws DatabaseException, SQLException, FileNotFoundException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
     }
 
