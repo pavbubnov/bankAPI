@@ -56,7 +56,7 @@ class ControllerHandlerCardTest {
         billService = new BillService(billRepository);
         depositService = new DepositService(depositRepository, billRepository);
         cardsController = new CardsController(cardService);
-        billsController = new BillsController(billService);
+        billsController = new BillsController(billService, null);
         depositController = new DepositController(depositService);
         controllerHandler = new ControllerHandler(cardsController, billsController, depositController);
         server = HttpServer.create(new InetSocketAddress(serverPort), 0);

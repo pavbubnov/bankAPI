@@ -1,5 +1,6 @@
 package com.bubnov.repository;
 
+import com.bubnov.controller.dto.bill.BillRequestDTO;
 import com.bubnov.controller.dto.bill.BillResponseDTO;
 import com.bubnov.exception.DatabaseException;
 
@@ -15,6 +16,7 @@ public class BillRepository {
     private static final String SELECT_BILLS_BY_BILL_NUMBER = "SELECT * FROM BILLS WHERE BILL_NUMBER = (?)";
     private static final String UPDATE_BILLS_BY_BILL_NUMBER = "UPDATE BILLS SET AMOUNT = ? WHERE BILL_NUMBER = ?";
     private static final String ARE_BILLS_EXISTS = "SELECT COUNT(1) FROM BILLS WHERE BILL_NUMBER = ?";
+    private static final String INSERT_BILL = "INSERT INTO BILLS (BILL_NUMBER, AMOUNT, ACCOUNT_ID) VALUES (?,?,?)";
     private static final String COLUMN_AMOUNT = "AMOUNT";
     private static final String COLUMN_ACCOUNT_ID = "ACCOUNT_ID";
     private H2Datasource h2Datasource;
@@ -48,11 +50,11 @@ public class BillRepository {
         }
     }
 
-    public boolean checkBillExists(String cardNumber) throws SQLException, DatabaseException {
+    public boolean checkBillExists(String billNumber) throws SQLException, DatabaseException {
         try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(ARE_BILLS_EXISTS);
         ) {
-            preparedStatement.setString(1, cardNumber);
+            preparedStatement.setString(1, billNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 if (resultSet.getInt(1) == 1) {
@@ -70,6 +72,18 @@ public class BillRepository {
             preparedStatement.setBigDecimal(1, amount);
             preparedStatement.setString(2, billNumber);
             preparedStatement.execute();
+        }
+    }
+
+    public BillRequestDTO createBill (BillRequestDTO requestDTO) throws SQLException, DatabaseException{
+        try (Connection db = h2Datasource.setH2Connection();
+             PreparedStatement preparedStatement = db.prepareStatement(INSERT_BILL);
+        ) {
+            preparedStatement.setString(1, requestDTO.getBillNumber());
+            preparedStatement.setBigDecimal(2, requestDTO.getAmount());
+            preparedStatement.setInt(3, requestDTO.getAccountId());
+            preparedStatement.execute();
+            return requestDTO;
         }
     }
 }

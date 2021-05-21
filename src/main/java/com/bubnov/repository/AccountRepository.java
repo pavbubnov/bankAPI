@@ -37,7 +37,6 @@ public class AccountRepository {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            Account test = new Account(resultSet.getInt(1), resultSet.getString(2));
             return new Account(resultSet.getInt(1), resultSet.getString(2));
         }
     }

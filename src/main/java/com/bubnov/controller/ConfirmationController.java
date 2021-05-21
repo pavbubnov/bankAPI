@@ -5,6 +5,7 @@ import com.bubnov.controller.dto.confirmation.ConfirmationUpdateDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.service.AccountService;
+import com.bubnov.service.BillService;
 import com.bubnov.service.ConfirmationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,12 +16,15 @@ import java.sql.SQLException;
 public class ConfirmationController {
     private ConfirmationService confirmationService;
     private AccountService accountService;
+    private BillService billService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public ConfirmationController(ConfirmationService confirmationService, AccountService accountService) {
+    public ConfirmationController(ConfirmationService confirmationService, AccountService accountService,
+                                  BillService billService) {
         this.confirmationService = confirmationService;
         this.accountService = accountService;
+        this.billService = billService;
     }
 
     public String getAllUnconfirm() throws RequestException, DatabaseException, IOException, SQLException {
@@ -29,12 +33,14 @@ public class ConfirmationController {
 
     public String updateStatus(InputStream input) throws DatabaseException, SQLException, IOException {
         ConfirmationUpdateDTO updateDTO = objectMapper.readValue(input, ConfirmationUpdateDTO.class);
-        confirmationService.updateStatus(updateDTO);
         if (updateDTO.getStatus().equals("CONFIRMED")) {
             ConfirmationResponseDTO confirmationDTO = confirmationService.getById(updateDTO.getId());
             switch (confirmationDTO.getEntityName()) {
                 case "Account":
                     accountService.postAccount(confirmationDTO);
+                    break;
+                case "Bill":
+                    billService.postBill(confirmationDTO);
                     break;
             }
         }

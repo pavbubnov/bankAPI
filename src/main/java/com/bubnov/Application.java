@@ -67,11 +67,12 @@ public class Application {
         TransferService transferService = new TransferService(transferRepository, billRepository, counterpartyRepository);
         ConfirmationService confirmationService = new ConfirmationService(confirmationRepository);
         CardsController cardsController = new CardsController(cardService);
-        BillsController billsController = new BillsController(billService);
+        BillsController billsController = new BillsController(billService, confirmationService);
         DepositController depositController = new DepositController(depositService);
         CounterpartyController counterpartyController = new CounterpartyController(counterpartyService);
         TransferController transferController = new TransferController(transferService);
-        ConfirmationController confirmationController = new ConfirmationController(confirmationService, accountService);
+        ConfirmationController confirmationController = new ConfirmationController(confirmationService, accountService,
+                billService);
         AccountController accountController = new AccountController(confirmationService);
 
         ControllerHandler controllerHandler = new ControllerHandler(cardsController, billsController,

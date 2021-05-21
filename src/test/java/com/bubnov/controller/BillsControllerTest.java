@@ -38,7 +38,7 @@ class BillsControllerTest {
         RunScript.execute(db, new FileReader(databaseScript));
         billRepository.setH2Datasource(datasource);
         billService = new BillService(billRepository);
-        billsController = new BillsController(billService);
+        billsController = new BillsController(billService, null);
     }
 
     @AfterEach

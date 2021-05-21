@@ -25,7 +25,8 @@ public class AccountController {
         this.confirmationService = confirmationService;
     }
 
-    public String postCreateAccountConfirmation(InputStream input) throws IOException, DatabaseException, SQLException {
+    public String postCreateAccountConfirmation(InputStream input)
+            throws IOException, DatabaseException, SQLException, RequestException {
         AccountDTO accountDTO = objectMapper.readValue(input, AccountDTO.class);
         ConfirmationRequestDTO requestDTO = new ConfirmationRequestDTO("Account", "POST",
                 objectMapper.writeValueAsString(accountDTO) , "NOT_CONFIRMED");
