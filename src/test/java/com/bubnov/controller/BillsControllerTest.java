@@ -30,18 +30,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BillsControllerTest {
 
-    BillRepository billRepository = BillRepository.getInstance();
-    ConfirmationRepository confirmationRepository = ConfirmationRepository.getInstance();
-    AccountRepository accountRepository = AccountRepository.getInstance();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    H2Datasource datasource = new H2Datasource(databasePath);
-    BillService billService;
-    BillsController billsController;
-    ConfirmationService confirmationService;
-    ConfirmationController confirmationController;
-    ObjectMapper objectMapper = new ObjectMapper();
+    private BillRepository billRepository = BillRepository.getInstance();
+    private ConfirmationRepository confirmationRepository = ConfirmationRepository.getInstance();
+    private AccountRepository accountRepository = AccountRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private BillService billService;
+    private BillsController billsController;
+    private ConfirmationService confirmationService;
+    private ConfirmationController confirmationController;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() throws DatabaseException, FileNotFoundException, SQLException {

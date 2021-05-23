@@ -37,23 +37,23 @@ import java.util.List;
 
 class ControllerHandlerDepositTest {
 
-    BillRepository billRepository = BillRepository.getInstance();
-    CardRepository cardRepository = CardRepository.getInstance();
-    DepositRepository depositRepository = DepositRepository.getInstance();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    H2Datasource datasource = new H2Datasource(databasePath);
-    BillService billService;
-    DepositService depositService;
-    CardService cardService;
-    BillsController billsController;
-    CardsController cardsController;
-    DepositController depositController;
-    ControllerHandler controllerHandler;
-    int serverPort = 8000;
-    ObjectMapper objectMapper = new ObjectMapper();
-    HttpServer server;
+    private BillRepository billRepository = BillRepository.getInstance();
+    private CardRepository cardRepository = CardRepository.getInstance();
+    private DepositRepository depositRepository = DepositRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private BillService billService;
+    private DepositService depositService;
+    private CardService cardService;
+    private BillsController billsController;
+    private CardsController cardsController;
+    private DepositController depositController;
+    private ControllerHandler controllerHandler;
+    private int serverPort = 8000;
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private HttpServer server;
 
     @BeforeEach
     void setUp() throws DatabaseException, IOException, SQLException {

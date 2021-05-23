@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 
 class DepositRepositoryTest {
 
-    DepositRepository depositRepository = DepositRepository.getInstance();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    H2Datasource datasource = new H2Datasource(databasePath);
+    private DepositRepository depositRepository = DepositRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
     private static final String SELECT_DEPOSITS_BY_BILL = "SELECT * FROM DEPOSITS WHERE BILL_NUMBER = ?";
     private static final String COLUMN_ID = "ID";
     private static final String COLUMN_BILL_NUMBER = "BILL_NUMBER";

@@ -5,7 +5,6 @@ import com.bubnov.controller.CardsController;
 import com.bubnov.controller.DepositController;
 import com.bubnov.controller.dto.card.CardRequestDTO;
 import com.bubnov.controller.dto.card.CardResponseDTO;
-import com.bubnov.controller.controllerhandler.ControllerHandler;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.repository.BillRepository;
 import com.bubnov.repository.CardRepository;
@@ -17,9 +16,15 @@ import com.bubnov.service.DepositService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import org.h2.tools.RunScript;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.io.*;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -27,23 +32,23 @@ import java.util.stream.Collectors;
 
 class ControllerHandlerCardTest {
 
-    BillRepository billRepository = BillRepository.getInstance();
-    CardRepository cardRepository = CardRepository.getInstance();
-    DepositRepository depositRepository = DepositRepository.getInstance();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    H2Datasource datasource = new H2Datasource(databasePath);
-    BillService billService;
-    DepositService depositService;
-    CardService cardService;
-    BillsController billsController;
-    CardsController cardsController;
-    DepositController depositController;
-    ControllerHandler controllerHandler;
-    int serverPort = 8000;
-    ObjectMapper objectMapper = new ObjectMapper();
-    HttpServer server;
+    private BillRepository billRepository = BillRepository.getInstance();
+    private CardRepository cardRepository = CardRepository.getInstance();
+    private DepositRepository depositRepository = DepositRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private BillService billService;
+    private DepositService depositService;
+    private CardService cardService;
+    private BillsController billsController;
+    private CardsController cardsController;
+    private DepositController depositController;
+    private ControllerHandler controllerHandler;
+    private int serverPort = 8000;
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private HttpServer server;
 
     @BeforeEach
     void setUp() throws DatabaseException, IOException, SQLException {

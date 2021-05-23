@@ -23,13 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DepositServiceTest {
 
-    BillRepository billRepository = BillRepository.getInstance();
-    DepositRepository depositRepository = DepositRepository.getInstance();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    H2Datasource datasource = new H2Datasource(databasePath);
-    DepositService depositService;
+    private BillRepository billRepository = BillRepository.getInstance();
+    private DepositRepository depositRepository = DepositRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private DepositService depositService;
 
     @BeforeEach
     void setUp() throws DatabaseException, SQLException, FileNotFoundException {
