@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -90,7 +91,10 @@ class CounterpartyServiceTest {
         List<Account> counterparties = counterpartyService.getCounterparties(1);
         Account account2 = new Account(2, "Максим");
         Account account3 = new Account(3, "Глеб");
-        org.assertj.core.api.Assertions.assertThat(counterparties).containsExactly(account2, account3);
+        List<Account> expect = new ArrayList<>();
+        expect.add(account2);
+        expect.add(account3);
+        Assertions.assertEquals(counterparties, expect);
     }
 
     @Test

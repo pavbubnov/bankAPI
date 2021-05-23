@@ -1,12 +1,10 @@
 package com.bubnov.controller.controllerhandler;
 
-import com.bubnov.controller.BillsController;
-import com.bubnov.controller.CardsController;
-import com.bubnov.controller.DepositController;
-import com.bubnov.controller.dto.bill.AmountResponseDTO;
-import com.bubnov.controller.dto.bill.BillRequestDTO;
-import com.bubnov.controller.dto.confirmation.ConfirmationResponseDTO;
+import com.bubnov.controller.*;
+import com.bubnov.controller.dto.counterparty.CounterpartyDTO;
+import com.bubnov.controller.dto.transfer.TransferDTO;
 import com.bubnov.exception.DatabaseException;
+import com.bubnov.exception.RequestException;
 import com.bubnov.repository.*;
 import com.bubnov.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,53 +23,71 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-class ControllerHandlerBillTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-    private BillRepository billRepository = BillRepository.getInstance();
-    private CardRepository cardRepository = CardRepository.getInstance();
-    private ConfirmationRepository confirmationRepository = ConfirmationRepository.getInstance();
-    private DepositRepository depositRepository = DepositRepository.getInstance();
-    private AccountRepository accountRepository = AccountRepository.getInstance();
+class TransferHandlerTest {
+
     private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
     private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
     private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    private H2Datasource datasource = new H2Datasource(databasePath);
+    private AccountRepository accountRepository = AccountRepository.getInstance();
+    private CardRepository cardRepository = CardRepository.getInstance();
+    private BillRepository billRepository = BillRepository.getInstance();
+    private DepositRepository depositRepository = DepositRepository.getInstance();
+    private CounterpartyRepository counterpartyRepository = CounterpartyRepository.getInstance();
+    private TransferRepository transferRepository = TransferRepository.getInstance();
+    private ConfirmationRepository confirmationRepository = ConfirmationRepository.getInstance();
+    private AccountService accountService;
+    private CardService cardService;
     private BillService billService;
     private DepositService depositService;
-    private CardService cardService;
-    private AccountService accountService;
+    private CounterpartyService counterpartyService;
+    private TransferService transferService;
     private ConfirmationService confirmationService;
-    private BillsController billsController;
-    private CardsController cardsController;
+    private AccountController accountController;
+    private CardsController cardController;
+    private BillsController billController;
     private DepositController depositController;
+    private CounterpartyController counterpartyController;
+    private TransferController transferController;
+    private ConfirmationController confirmationController;
     private ControllerHandler controllerHandler;
     private int serverPort = 8000;
     private ObjectMapper objectMapper = new ObjectMapper();
     private HttpServer server;
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private CounterpartyDTO counterpartyDTO = new CounterpartyDTO(1, 2);
 
     @BeforeEach
     void setUp() throws DatabaseException, IOException, SQLException {
-
-        AccountRepository accountRepository = AccountRepository.getInstance();
-        accountRepository.setH2Datasource(datasource);
         Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScript));
+        accountRepository.setH2Datasource(datasource);
         cardRepository.setH2Datasource(datasource);
         billRepository.setH2Datasource(datasource);
         depositRepository.setH2Datasource(datasource);
+        counterpartyRepository.setH2Datasource(datasource);
+        transferRepository.setH2Datasource(datasource);
         confirmationRepository.setH2Datasource(datasource);
-        accountRepository.setH2Datasource(datasource);
+        accountService = new AccountService(accountRepository);
         cardService = new CardService(cardRepository, billRepository);
         billService = new BillService(billRepository);
-        accountService = new AccountService(accountRepository);
-        confirmationService = new ConfirmationService(confirmationRepository);
         depositService = new DepositService(depositRepository, billRepository);
-        cardsController = new CardsController(cardService);
-        billsController = new BillsController(billService, confirmationService);
+        counterpartyService = new CounterpartyService(counterpartyRepository, accountRepository);
+        transferService = new TransferService(transferRepository, billRepository, counterpartyRepository);
+        confirmationService = new ConfirmationService(confirmationRepository);
+        accountController = new AccountController(confirmationService);
+        cardController = new CardsController(cardService);
+        billController = new BillsController(billService, confirmationService);
         depositController = new DepositController(depositService);
-        controllerHandler = new ControllerHandler(cardsController, billsController, depositController);
+        counterpartyController = new CounterpartyController(counterpartyService);
+        transferController = new TransferController(transferService);
+        confirmationController = new ConfirmationController(confirmationService, accountService, billService);
+        controllerHandler = new ControllerHandler(cardController, billController, depositController,
+                counterpartyController, transferController, confirmationController, accountController);
         server = HttpServer.create(new InetSocketAddress(serverPort), 0);
         controllerHandler.startController(server);
+        counterpartyRepository.createCounterparty(counterpartyDTO);
     }
 
     @AfterEach
@@ -82,48 +98,15 @@ class ControllerHandlerBillTest {
     }
 
     @Test
-    void billGetOkTest() throws IOException {
-
-        URL url = new URL("http://localhost:8000/clients/bills/11111");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        Assertions.assertEquals(connection.getResponseCode(), 200);
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(connection.getInputStream(), "utf-8")
-        );
-        AmountResponseDTO responseDTO = objectMapper.readValue(in, AmountResponseDTO.class);
-        in.close();
-        Assertions.assertEquals(responseDTO.getAmount(), BigDecimal.valueOf(50000.05));
-    }
-
-    @Test
-    void billGetNotFoundTest() throws IOException {
-        URL url = new URL("http://localhost:8000/clients/bills/22221");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        Assertions.assertEquals(connection.getResponseCode(), 400);
-        Assertions.assertEquals(errorMessage(connection), "Счет : 22221 не найден");
-    }
-
-    @Test
-    void BillGetBadRequestTest() throws IOException {
-        URL url = new URL("http://localhost:8000/clients/bills/2222d");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        Assertions.assertEquals(connection.getResponseCode(), 400);
-        Assertions.assertEquals(errorMessage(connection), "Некорректно задан номер");
-    }
-
-    @Test
-    void postBillOkTest() throws IOException, DatabaseException, SQLException {
-
-        URL url = new URL("http://localhost:8000/clients/bills");
+    void postTransferOkTest() throws IOException, DatabaseException, SQLException {
+        URL url = new URL("http://localhost:8000/clients/transfer");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept-Charset", "UTF-8");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
-        BillRequestDTO requestDTO = new BillRequestDTO("12345", BigDecimal.valueOf(9000.98), 1);
+        TransferDTO requestDTO = new TransferDTO("11111", "22222" ,
+                BigDecimal.valueOf(1.1));
         String jsonRequest = objectMapper.writeValueAsString(requestDTO);
         DataOutputStream out = new DataOutputStream(connection.getOutputStream());
         out.writeBytes(jsonRequest);
@@ -133,94 +116,111 @@ class ControllerHandlerBillTest {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(connection.getInputStream(), "utf-8")
         );
-        ConfirmationResponseDTO confirmationResponseDTO = objectMapper.readValue(in, ConfirmationResponseDTO.class);
+        TransferDTO response = objectMapper.readValue(in, TransferDTO.class);
         in.close();
-        Assertions.assertEquals(confirmationResponseDTO.getId(), 1);
-        Assertions.assertEquals(confirmationResponseDTO.getEntityName(), "Bill");
-        Assertions.assertEquals(confirmationResponseDTO.getOperation(), "POST");
-        Assertions.assertEquals(confirmationResponseDTO.getConfirmationStatus(), "NOT_CONFIRMED");
-        BillRequestDTO billDTO = new BillRequestDTO("12345", BigDecimal.valueOf(9000.98), 1);
-        String info = objectMapper.writeValueAsString(billDTO);
-        Assertions.assertEquals(confirmationResponseDTO.getInfo(), info);
-        Assertions.assertEquals(confirmationRepository.getConfirmById(1), confirmationResponseDTO);
+        Assertions.assertEquals(requestDTO, response);
+        Assertions.assertEquals(billRepository.getBillByNumber("11111").getAmount(),
+                BigDecimal.valueOf(49998.95));
+        Assertions.assertEquals(billRepository.getBillByNumber("22222").getAmount().longValue(),
+                BigDecimal.valueOf(100001.1).longValue());
     }
 
     @Test
-    void postBillExistBillTest() throws IOException, DatabaseException, SQLException {
-
-        URL url = new URL("http://localhost:8000/clients/bills");
+    void postTransferBadAmount1() throws IOException {
+        URL url = new URL("http://localhost:8000/clients/transfer");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept-Charset", "UTF-8");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
-        BillRequestDTO requestDTO = new BillRequestDTO("11111", BigDecimal.valueOf(9000.98), 1);
+        TransferDTO requestDTO = new TransferDTO("11111", "22222" ,
+                BigDecimal.valueOf(-1.1));
         String jsonRequest = objectMapper.writeValueAsString(requestDTO);
         DataOutputStream out = new DataOutputStream(connection.getOutputStream());
         out.writeBytes(jsonRequest);
         out.flush();
         out.close();
         Assertions.assertEquals(connection.getResponseCode(), 400);
-        Assertions.assertEquals(errorMessage(connection), "Счет: 11111 уже существует");
+        Assertions.assertEquals(errorMessage(connection), "Сумма перевода должна быть положительной");
     }
 
     @Test
-    void postBillNotCorrectTest() throws IOException, DatabaseException, SQLException {
-
-        URL url = new URL("http://localhost:8000/clients/bills");
+    void postTransferBadBill1() throws IOException {
+        URL url = new URL("http://localhost:8000/clients/transfer");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept-Charset", "UTF-8");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
-        BillRequestDTO requestDTO = new BillRequestDTO("111t1", BigDecimal.valueOf(9000.98), 1);
+        TransferDTO requestDTO = new TransferDTO("11112", "22222" ,
+                BigDecimal.valueOf(1.1));
         String jsonRequest = objectMapper.writeValueAsString(requestDTO);
         DataOutputStream out = new DataOutputStream(connection.getOutputStream());
         out.writeBytes(jsonRequest);
         out.flush();
         out.close();
         Assertions.assertEquals(connection.getResponseCode(), 400);
-        Assertions.assertEquals(errorMessage(connection), "Номер счета задан некорректно");
+        Assertions.assertEquals(errorMessage(connection), "Счет 11112 не создан");
     }
 
     @Test
-    void postAccountNotExistTest() throws IOException, DatabaseException, SQLException {
-
-        URL url = new URL("http://localhost:8000/clients/bills");
+    void postTransferBadBill2() throws IOException {
+        URL url = new URL("http://localhost:8000/clients/transfer");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept-Charset", "UTF-8");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
-        BillRequestDTO requestDTO = new BillRequestDTO("12345", BigDecimal.valueOf(9000.98), 7);
+        TransferDTO requestDTO = new TransferDTO("11111", "22221" ,
+                BigDecimal.valueOf(1.1));
         String jsonRequest = objectMapper.writeValueAsString(requestDTO);
         DataOutputStream out = new DataOutputStream(connection.getOutputStream());
         out.writeBytes(jsonRequest);
         out.flush();
         out.close();
         Assertions.assertEquals(connection.getResponseCode(), 400);
-        Assertions.assertEquals(errorMessage(connection), "Аккаунта с id: 7 не существует");
+        Assertions.assertEquals(errorMessage(connection), "Счет 22221 не создан");
     }
 
     @Test
-    void postAccountNotCorrectTest() throws IOException, DatabaseException, SQLException {
-
-        URL url = new URL("http://localhost:8000/clients/bills");
+    void postTransferNotCounterParty() throws IOException {
+        URL url = new URL("http://localhost:8000/clients/transfer");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Accept-Charset", "UTF-8");
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
-        BillRequestDTO requestDTO = new BillRequestDTO("12345", BigDecimal.valueOf(9000.98), -4);
+        TransferDTO requestDTO = new TransferDTO("11111", "33333" ,
+                BigDecimal.valueOf(1.1));
         String jsonRequest = objectMapper.writeValueAsString(requestDTO);
         DataOutputStream out = new DataOutputStream(connection.getOutputStream());
         out.writeBytes(jsonRequest);
         out.flush();
         out.close();
         Assertions.assertEquals(connection.getResponseCode(), 400);
-        Assertions.assertEquals(errorMessage(connection), "Номер аккаунта должен быть положитльным");
+        Assertions.assertEquals(errorMessage(connection), "Получатель не является контрагентом отправителя, " +
+                "создайте запрос на добавление контрагента");
     }
 
+    @Test
+    void postTransferNotEnoughMoney() throws IOException {
+        URL url = new URL("http://localhost:8000/clients/transfer");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Accept-Charset", "UTF-8");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
+        TransferDTO requestDTO = new TransferDTO("11111", "22222" ,
+                BigDecimal.valueOf(10000000));
+        String jsonRequest = objectMapper.writeValueAsString(requestDTO);
+        DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+        out.writeBytes(jsonRequest);
+        out.flush();
+        out.close();
+        Assertions.assertEquals(connection.getResponseCode(), 400);
+        Assertions.assertEquals(errorMessage(connection), "У отправителя недостаточно средств для совершения " +
+                "перевода");
+    }
 
     private String errorMessage(HttpURLConnection connection) throws IOException {
         BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"));
