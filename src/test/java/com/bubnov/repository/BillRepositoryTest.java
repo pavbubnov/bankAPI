@@ -1,5 +1,6 @@
 package com.bubnov.repository;
 
+import com.bubnov.controller.dto.bill.BillRequestDTO;
 import com.bubnov.controller.dto.bill.BillResponseDTO;
 import com.bubnov.exception.DatabaseException;
 import org.h2.tools.RunScript;
@@ -58,5 +59,14 @@ class BillRepositoryTest {
         billRepository.changeAmount("11111", BigDecimal.valueOf(50301.17));
         billResponseDTO = billRepository.getBillByNumber("11111");
         Assertions.assertEquals(billResponseDTO.getAmount(), BigDecimal.valueOf(50301.17));
+    }
+
+    @Test
+    void createBill() throws DatabaseException, SQLException {
+        BillRequestDTO billRequestDTO = new BillRequestDTO("12345", BigDecimal.valueOf(9000.98), 1);
+        billRepository.createBill(billRequestDTO);
+        BillResponseDTO responseExpect = new BillResponseDTO(BigDecimal.valueOf(9000.98), 1);
+        BillResponseDTO billByNumber = billRepository.getBillByNumber("12345");
+        Assertions.assertEquals(billByNumber, responseExpect);
     }
 }

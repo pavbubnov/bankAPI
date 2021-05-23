@@ -1,11 +1,15 @@
 package com.bubnov.service;
 
 import com.bubnov.controller.dto.bill.AmountResponseDTO;
+import com.bubnov.controller.dto.bill.BillRequestDTO;
+import com.bubnov.controller.dto.confirmation.ConfirmationRequestDTO;
+import com.bubnov.controller.dto.confirmation.ConfirmationResponseDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.repository.BillRepository;
 import com.bubnov.repository.H2Datasource;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.h2.tools.RunScript;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -14,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -58,5 +63,18 @@ class BillServiceTest {
             billService.getAmount(requestBad);
         });
         Assertions.assertEquals(throwable.getMessage(), "Счет : " + requestBad + " не найден");
+    }
+
+    @Test
+    void postBill() throws IOException, DatabaseException, SQLException {
+        BillRequestDTO billDTO = new BillRequestDTO("12345", BigDecimal.valueOf(9000), 1);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String info = objectMapper.writeValueAsString(billDTO);
+        ConfirmationResponseDTO responseDTO = new ConfirmationResponseDTO(1, "Bill", "POST",
+                info, "CONFIRMED");
+        BillRequestDTO requestDTO = billService.postBill(responseDTO);
+        Assertions.assertEquals(requestDTO.getBillNumber(), "12345");
+        Assertions.assertEquals(requestDTO.getAccountId(), 1);
+        Assertions.assertEquals(requestDTO.getAmount(), BigDecimal.valueOf(9000));
     }
 }

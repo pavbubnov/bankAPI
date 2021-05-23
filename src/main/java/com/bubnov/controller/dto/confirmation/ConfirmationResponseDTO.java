@@ -74,7 +74,7 @@ public class ConfirmationResponseDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ConfirmationResponseDTO that = (ConfirmationResponseDTO) o;
-        return id == that.id && info == that.info && Objects.equals(entityName, that.entityName) &&
+        return id == that.id && Objects.equals(info, that.info) && Objects.equals(entityName, that.entityName) &&
                 Objects.equals(operation, that.operation) && Objects.equals(confirmationStatus, that.confirmationStatus);
     }
 
