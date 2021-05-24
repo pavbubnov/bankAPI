@@ -1,6 +1,5 @@
 package com.bubnov.controller.controllerhandler;
 
-import com.bubnov.controller.CounterpartyController;
 import com.bubnov.controller.TransferController;
 import com.sun.net.httpserver.HttpServer;
 

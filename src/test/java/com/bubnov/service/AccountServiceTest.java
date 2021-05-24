@@ -1,13 +1,10 @@
 package com.bubnov.service;
 
 import com.bubnov.controller.dto.account.AccountDTO;
-import com.bubnov.controller.dto.bill.BillRequestDTO;
 import com.bubnov.controller.dto.confirmation.ConfirmationResponseDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.repository.AccountRepository;
-import com.bubnov.repository.CounterpartyRepository;
 import com.bubnov.repository.H2Datasource;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.h2.tools.RunScript;
 import org.junit.jupiter.api.AfterEach;
@@ -18,11 +15,8 @@ import org.junit.jupiter.api.Test;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AccountServiceTest {
 

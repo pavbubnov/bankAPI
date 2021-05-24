@@ -7,11 +7,11 @@ import com.bubnov.repository.*;
 import com.bubnov.service.*;
 import com.sun.net.httpserver.HttpServer;
 import org.h2.tools.RunScript;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
+import java.io.*;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -20,17 +20,17 @@ public class Application {
 
     public static void main(String[] args) {
 
-        FileInputStream fileInputStream;
         Properties property = new Properties();
+        Reader reader = null;
         try {
-            fileInputStream = new FileInputStream("src/main/resources/path.properties");
-            property.load(fileInputStream);
-            fileInputStream.close();
+            property.load(Application.class.getResourceAsStream("/path.properties"));
+            InputStream in = Application.class.getResourceAsStream("/startDatabase.sql");
+            reader = new BufferedReader(new InputStreamReader
+                    (in, Charset.forName(StandardCharsets.UTF_8.name())));
         } catch (IOException e) {
             e.printStackTrace();
         }
         String databaseFile = property.getProperty("database.file");
-        String databaseScript = property.getProperty("database.script");
         String databasePath = property.getProperty("database.path");
         H2Datasource h2Datasource = new H2Datasource(databasePath);
         AccountRepository accountRepository = AccountRepository.getInstance();
@@ -52,11 +52,9 @@ public class Application {
         } catch (FileNotFoundException e) {
             try (Connection db = h2Datasource.setH2Connection();
             ) {
-                RunScript.execute(db, new FileReader(databaseScript));
+                RunScript.execute(db, reader);
             } catch (SQLException | DatabaseException throwables) {
                 throwables.printStackTrace();
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
             }
         }
         AccountService accountService = new AccountService(accountRepository);
@@ -74,7 +72,6 @@ public class Application {
         ConfirmationController confirmationController = new ConfirmationController(confirmationService, accountService,
                 billService);
         AccountController accountController = new AccountController(confirmationService);
-
         ControllerHandler controllerHandler = new ControllerHandler(cardsController, billsController,
                 depositController, counterpartyController, transferController, confirmationController, accountController);
         try {

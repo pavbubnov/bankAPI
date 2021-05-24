@@ -1,7 +1,6 @@
 package com.bubnov.repository;
 
 import com.bubnov.controller.dto.counterparty.CounterpartyDTO;
-import com.bubnov.entity.Account;
 import com.bubnov.exception.DatabaseException;
 
 import java.sql.Connection;

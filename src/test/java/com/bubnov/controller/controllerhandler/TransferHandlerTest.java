@@ -4,7 +4,6 @@ import com.bubnov.controller.*;
 import com.bubnov.controller.dto.counterparty.CounterpartyDTO;
 import com.bubnov.controller.dto.transfer.TransferDTO;
 import com.bubnov.exception.DatabaseException;
-import com.bubnov.exception.RequestException;
 import com.bubnov.repository.*;
 import com.bubnov.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,8 +21,6 @@ import java.net.InetSocketAddress;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TransferHandlerTest {
 

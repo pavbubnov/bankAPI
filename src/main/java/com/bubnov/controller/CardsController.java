@@ -28,5 +28,4 @@ public class CardsController {
         return objectMapper.writeValueAsString(cardService.getCardsByBillNumber(input));
     }
 
-
 }

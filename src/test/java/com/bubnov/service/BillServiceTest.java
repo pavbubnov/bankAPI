@@ -2,7 +2,6 @@ package com.bubnov.service;
 
 import com.bubnov.controller.dto.bill.AmountResponseDTO;
 import com.bubnov.controller.dto.bill.BillRequestDTO;
-import com.bubnov.controller.dto.confirmation.ConfirmationRequestDTO;
 import com.bubnov.controller.dto.confirmation.ConfirmationResponseDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;

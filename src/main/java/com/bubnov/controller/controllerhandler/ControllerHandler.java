@@ -38,28 +38,20 @@ public class ControllerHandler {
 
         CardHandler cardHandler = new CardHandler();
         cardHandler.handle(server, cardsController);
-
         BillHandler billHandler = new BillHandler();
         billHandler.handle(server, billsController);
-
         DepositHandler depositHandler = new DepositHandler();
         depositHandler.handle(server, depositController);
-
         CounterPartyHandler counterPartyHandler = new CounterPartyHandler();
         counterPartyHandler.handle(server, counterpartyController);
-
         TransferHandler transferHandler = new TransferHandler();
         transferHandler.handle(server, transferController);
-
         ConfirmationHandler confirmationHandler = new ConfirmationHandler();
         confirmationHandler.handle(server, confirmationController);
-
         AccountHandler accountHandler = new AccountHandler();
         accountHandler.handle(server, accountController);
-
         server.setExecutor(null);
         server.start();
-
     }
 
 }

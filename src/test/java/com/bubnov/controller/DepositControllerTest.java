@@ -5,10 +5,8 @@ import com.bubnov.controller.dto.deposit.DepositResponseDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.repository.BillRepository;
-import com.bubnov.repository.CardRepository;
 import com.bubnov.repository.DepositRepository;
 import com.bubnov.repository.H2Datasource;
-import com.bubnov.service.CardService;
 import com.bubnov.service.DepositService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +21,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DepositControllerTest {
 
