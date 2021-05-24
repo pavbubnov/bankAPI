@@ -13,18 +13,13 @@ public class DepositRepository {
     private static DepositRepository INSTANCE;
     private static final String INSERT_DEPOSIT = "INSERT INTO DEPOSITS(BILL_NUMBER, AMOUNT) VALUES (?, ?)";
 
-    private String databasePath;
-    H2Datasource datasource = new H2Datasource();
+    private H2Datasource h2Datasource;
 
     private DepositRepository() {
     }
 
-    public DepositRepository(String databasePath) {
-        this.databasePath = databasePath;
-    }
-
-    public void setDatabasePath(String databasePath) {
-        this.databasePath = databasePath;
+    public void setH2Datasource(H2Datasource h2Datasource) {
+        this.h2Datasource = h2Datasource;
     }
 
     public static DepositRepository getInstance() {
@@ -35,7 +30,7 @@ public class DepositRepository {
     }
 
     public DepositRequestDTO createDeposit(DepositRequestDTO request) throws SQLException, DatabaseException {
-        try (Connection db = datasource.setH2Connection(databasePath);
+        try (Connection db = h2Datasource.setH2Connection();
              PreparedStatement preparedStatement = db.prepareStatement(INSERT_DEPOSIT);
         ) {
             preparedStatement.setString(1, request.getBillNumber());

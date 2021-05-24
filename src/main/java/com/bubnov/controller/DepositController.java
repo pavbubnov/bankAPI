@@ -13,7 +13,7 @@ public class DepositController {
 
     private DepositService depositService;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public DepositController(DepositService depositService) {
         this.depositService = depositService;

@@ -5,10 +5,8 @@ import com.bubnov.controller.dto.deposit.DepositResponseDTO;
 import com.bubnov.exception.DatabaseException;
 import com.bubnov.exception.RequestException;
 import com.bubnov.repository.BillRepository;
-import com.bubnov.repository.CardRepository;
 import com.bubnov.repository.DepositRepository;
 import com.bubnov.repository.H2Datasource;
-import com.bubnov.service.CardService;
 import com.bubnov.service.DepositService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,33 +21,33 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DepositControllerTest {
 
-    DepositRepository depositRepository = DepositRepository.getInstance();
-    BillRepository billRepository = BillRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    DepositService depositService;
-    DepositController depositController;
-    ObjectMapper objectMapper = new ObjectMapper();
+    private DepositRepository depositRepository = DepositRepository.getInstance();
+    private BillRepository billRepository = BillRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private DepositService depositService;
+    private DepositController depositController;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() throws DatabaseException, FileNotFoundException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScript));
-        depositRepository.setDatabasePath(databasePath);
-        billRepository.setDatabasePath(databasePath);
+        depositRepository.setH2Datasource(datasource);
+        billRepository.setH2Datasource(datasource);
         depositService = new DepositService(depositRepository, billRepository);
         depositController = new DepositController(depositService);
     }
 
     @AfterEach
     void tearDown() throws DatabaseException, FileNotFoundException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
     }
 

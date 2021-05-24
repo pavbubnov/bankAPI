@@ -17,7 +17,7 @@ public class CardsController {
         this.cardService = cardService;
     }
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public String postCard(InputStream input) throws IOException, RequestException {
         CardRequestDTO requestDTO = objectMapper.readValue(input, CardRequestDTO.class);
@@ -25,9 +25,7 @@ public class CardsController {
     }
 
     public String getCards(String input) throws RequestException, DatabaseException, IOException {
-        ;
         return objectMapper.writeValueAsString(cardService.getCardsByBillNumber(input));
     }
-
 
 }

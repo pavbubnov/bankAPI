@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.Connection;
@@ -23,28 +21,30 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 class CardServiceTest {
 
-    CardRepository cardRepository = CardRepository.getInstance();
-    BillRepository billRepository = BillRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    CardService cardService;
+    private CardRepository cardRepository = CardRepository.getInstance();
+    private BillRepository billRepository = BillRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private CardService cardService;
 
     @BeforeEach
     void setUp() throws DatabaseException, FileNotFoundException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScript));
-        cardRepository.setDatabasePath(databasePath);
-        billRepository.setDatabasePath(databasePath);
+        cardRepository.setH2Datasource(datasource);
+        billRepository.setH2Datasource(datasource);
         cardService = new CardService(cardRepository, billRepository);
     }
 
     @AfterEach
     void tearDown() throws DatabaseException, FileNotFoundException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
     }
 

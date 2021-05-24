@@ -1,5 +1,8 @@
-package com.bubnov.controller;
+package com.bubnov.controller.controllerhandler;
 
+import com.bubnov.controller.BillsController;
+import com.bubnov.controller.CardsController;
+import com.bubnov.controller.DepositController;
 import com.bubnov.controller.dto.card.CardRequestDTO;
 import com.bubnov.controller.dto.card.CardResponseDTO;
 import com.bubnov.exception.DatabaseException;
@@ -13,9 +16,15 @@ import com.bubnov.service.DepositService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import org.h2.tools.RunScript;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.io.*;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -23,36 +32,36 @@ import java.util.stream.Collectors;
 
 class ControllerHandlerCardTest {
 
-    BillRepository billRepository = BillRepository.getInstance();
-    CardRepository cardRepository = CardRepository.getInstance();
-    DepositRepository depositRepository = DepositRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    BillService billService;
-    DepositService depositService;
-    CardService cardService;
-    BillsController billsController;
-    CardsController cardsController;
-    DepositController depositController;
-    ControllerHandler controllerHandler;
-    int serverPort = 8000;
-    ObjectMapper objectMapper = new ObjectMapper();
-    HttpServer server;
+    private BillRepository billRepository = BillRepository.getInstance();
+    private CardRepository cardRepository = CardRepository.getInstance();
+    private DepositRepository depositRepository = DepositRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private BillService billService;
+    private DepositService depositService;
+    private CardService cardService;
+    private BillsController billsController;
+    private CardsController cardsController;
+    private DepositController depositController;
+    private ControllerHandler controllerHandler;
+    private int serverPort = 8000;
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private HttpServer server;
 
     @BeforeEach
     void setUp() throws DatabaseException, IOException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScript));
-        cardRepository.setDatabasePath(databasePath);
-        billRepository.setDatabasePath(databasePath);
-        depositRepository.setDatabasePath(databasePath);
+        cardRepository.setH2Datasource(datasource);
+        billRepository.setH2Datasource(datasource);
+        depositRepository.setH2Datasource(datasource);
         cardService = new CardService(cardRepository, billRepository);
         billService = new BillService(billRepository);
         depositService = new DepositService(depositRepository, billRepository);
         cardsController = new CardsController(cardService);
-        billsController = new BillsController(billService);
+        billsController = new BillsController(billService, null);
         depositController = new DepositController(depositService);
         controllerHandler = new ControllerHandler(cardsController, billsController, depositController);
         server = HttpServer.create(new InetSocketAddress(serverPort), 0);
@@ -61,7 +70,7 @@ class ControllerHandlerCardTest {
 
     @AfterEach
     void tearDown() throws DatabaseException, FileNotFoundException, SQLException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
         server.stop(0);
     }
@@ -101,7 +110,7 @@ class ControllerHandlerCardTest {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         Assertions.assertEquals(connection.getResponseCode(), 400);
-        Assertions.assertEquals(errorMessage(connection), "Некорректно задан счет");
+        Assertions.assertEquals(errorMessage(connection), "Некорректно задан номер");
     }
 
     @Test

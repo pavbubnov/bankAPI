@@ -44,4 +44,12 @@ public class BillResponseDTO {
     public int hashCode() {
         return Objects.hash(amount, accountId);
     }
+
+    @Override
+    public String toString() {
+        return "BillResponseDTO{" +
+                "amount=" + amount +
+                ", accountId=" + accountId +
+                '}';
+    }
 }

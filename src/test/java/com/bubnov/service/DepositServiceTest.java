@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
@@ -23,26 +24,26 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DepositServiceTest {
 
-    BillRepository billRepository = BillRepository.getInstance();
-    DepositRepository depositRepository = DepositRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
-    DepositService depositService;
+    private BillRepository billRepository = BillRepository.getInstance();
+    private DepositRepository depositRepository = DepositRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
+    private DepositService depositService;
 
     @BeforeEach
     void setUp() throws DatabaseException, SQLException, FileNotFoundException {
-        Connection db = datasource.setH2Connection(databasePath);
-        depositRepository.setDatabasePath(databasePath);
-        billRepository.setDatabasePath(databasePath);
+        Connection db = datasource.setH2Connection();
+        depositRepository.setH2Datasource(datasource);
+        billRepository.setH2Datasource(datasource);
         depositService = new DepositService(depositRepository, billRepository);
         RunScript.execute(db, new FileReader(databaseScript));
     }
 
     @AfterEach
     void tearDown() throws DatabaseException, SQLException, FileNotFoundException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
     }
 

@@ -1,5 +1,6 @@
 package com.bubnov.repository;
 
+import com.bubnov.controller.dto.bill.BillRequestDTO;
 import com.bubnov.controller.dto.bill.BillResponseDTO;
 import com.bubnov.exception.DatabaseException;
 import org.h2.tools.RunScript;
@@ -16,22 +17,22 @@ import java.sql.SQLException;
 
 class BillRepositoryTest {
 
-    BillRepository billRepository = BillRepository.getInstance();
-    H2Datasource datasource = new H2Datasource();
-    String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
-    String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
-    String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private BillRepository billRepository = BillRepository.getInstance();
+    private String databasePath = "jdbc:h2:mem:db;DB_CLOSE_DELAY=-1";
+    private String databaseScript = "src/main/resources/tests/testCardDatabase.sql";
+    private String databaseScriptDel = "src/main/resources/tests/deleteTestCardDatabase.sql";
+    private H2Datasource datasource = new H2Datasource(databasePath);
 
     @BeforeEach
     void setUp() throws DatabaseException, SQLException, FileNotFoundException {
-        Connection db = datasource.setH2Connection(databasePath);
-        billRepository.setDatabasePath(databasePath);
+        Connection db = datasource.setH2Connection();
+        billRepository.setH2Datasource(datasource);
         RunScript.execute(db, new FileReader(databaseScript));
     }
 
     @AfterEach
     void tearDown() throws DatabaseException, SQLException, FileNotFoundException {
-        Connection db = datasource.setH2Connection(databasePath);
+        Connection db = datasource.setH2Connection();
         RunScript.execute(db, new FileReader(databaseScriptDel));
     }
 
@@ -58,5 +59,14 @@ class BillRepositoryTest {
         billRepository.changeAmount("11111", BigDecimal.valueOf(50301.17));
         billResponseDTO = billRepository.getBillByNumber("11111");
         Assertions.assertEquals(billResponseDTO.getAmount(), BigDecimal.valueOf(50301.17));
+    }
+
+    @Test
+    void createBill() throws DatabaseException, SQLException {
+        BillRequestDTO billRequestDTO = new BillRequestDTO("12345", BigDecimal.valueOf(9000.98), 1);
+        billRepository.createBill(billRequestDTO);
+        BillResponseDTO responseExpect = new BillResponseDTO(BigDecimal.valueOf(9000.98), 1);
+        BillResponseDTO billByNumber = billRepository.getBillByNumber("12345");
+        Assertions.assertEquals(billByNumber, responseExpect);
     }
 }

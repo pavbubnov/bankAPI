@@ -8,7 +8,13 @@ import java.sql.SQLException;
 
 public class H2Datasource {
 
-    public Connection setH2Connection(String databasePath) throws DatabaseException {
+    private String databasePath;
+
+    public H2Datasource(String databasePath) {
+        this.databasePath = databasePath;
+    }
+
+    public Connection setH2Connection() throws DatabaseException {
         try {
             return DriverManager.getConnection(databasePath);
         } catch (SQLException throwables) {
